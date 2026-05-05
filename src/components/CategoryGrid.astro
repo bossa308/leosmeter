@@ -1,0 +1,75 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const categories = [
+  {
+    slug: 'power-meter',
+    name: 'เพาเวอร์มิเตอร์',
+    nameEn: 'Power Meters',
+    description: 'วัดค่าพลังงานไฟฟ้า 3 เฟสแบบเรียลไทม์ รองรับ Modbus และ Ethernet',
+    icon: 'lucide:activity',
+    bg: 'bg-blue-50',
+    border: 'border-blue-200',
+    iconColor: 'text-brand',
+    hoverBg: 'hover:bg-blue-100',
+  },
+  {
+    slug: 'jumbo-display',
+    name: 'จอแสดงผลขนาดใหญ่',
+    nameEn: 'Jumbo Displays',
+    description: 'LED ตัวเลขขนาดใหญ่ มองเห็นชัดจากระยะไกล รองรับ RS-485',
+    icon: 'lucide:monitor',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    iconColor: 'text-amber-700',
+    hoverBg: 'hover:bg-amber-100',
+  },
+  {
+    slug: 'ntp-clock',
+    name: 'นาฬิกา NTP',
+    nameEn: 'NTP Clocks',
+    description: 'ซิงค์เวลาแม่นยำผ่านเครือข่าย NTP สำหรับโรงงานอุตสาหกรรม',
+    icon: 'lucide:clock',
+    bg: 'bg-green-50',
+    border: 'border-green-200',
+    iconColor: 'text-green-700',
+    hoverBg: 'hover:bg-green-100',
+  },
+  {
+    slug: 'haiwell',
+    name: 'Haiwell PLC/HMI',
+    nameEn: 'Haiwell PLC/HMI',
+    description: 'ระบบควบคุมอัตโนมัติอุตสาหกรรม PLC และ HMI จาก Haiwell',
+    icon: 'lucide:cpu',
+    bg: 'bg-purple-50',
+    border: 'border-purple-200',
+    iconColor: 'text-purple-700',
+    hoverBg: 'hover:bg-purple-100',
+  },
+] as const;
+---
+
+<section class="py-14 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 class="section-heading">หมวดหมู่สินค้า</h2>
+      <p class="text-gray-500 mt-2">ครบวงจรอุปกรณ์วัดแสดงผลสำหรับงานอุตสาหกรรม</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {categories.map((cat) => (
+        <a
+          href={`/category/${cat.slug}`}
+          class={`group border rounded-xl p-6 ${cat.bg} ${cat.border} ${cat.hoverBg} hover:shadow-md transition-all duration-200`}
+        >
+          <Icon name={cat.icon} class={`w-9 h-9 ${cat.iconColor} mb-4`} aria-hidden="true" />
+          <h3 class="font-bold text-gray-900 text-lg leading-tight">{cat.name}</h3>
+          <p class="text-xs text-gray-500 mt-0.5">{cat.nameEn}</p>
+          <p class="text-sm text-gray-600 mt-3 leading-relaxed">{cat.description}</p>
+          <span class="text-brand text-sm font-semibold mt-4 inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+            ดูสินค้า <span aria-hidden="true">→</span>
+          </span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

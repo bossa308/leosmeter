@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryGrid from '../components/CategoryGrid.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+
+const allProducts = await getCollection('products');
+const featured = allProducts
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
+---
+
+<BaseLayout
+  title="หน้าแรก"
+  description="LEOS METER | SME INTER — ตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรม เพาเวอร์มิเตอร์ จอแสดงผล นาฬิกา NTP Haiwell PLC/HMI ราคาดี บริการหลังการขาย"
+>
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-brand to-blue-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <div class="max-w-2xl">
+        <p class="text-blue-200 text-sm font-semibold uppercase tracking-widest mb-4">LEOS METER | SME INTER</p>
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-5">
+          ครบวงจร<br />
+          อุปกรณ์วัดแสดงผล<br />
+          อุตสาหกรรม
+        </h1>
+        <p class="text-blue-100 text-lg leading-relaxed mb-8">
+          เพาเวอร์มิเตอร์ · จอแสดงผลขนาดใหญ่ · นาฬิกา NTP · Haiwell PLC/HMI<br />
+          เลือกสรรสินค้าคุณภาพสูง บริการโดยผู้เชี่ยวชาญ
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="/products" class="bg-white text-brand font-bold px-7 py-3 rounded-lg hover:bg-blue-50 transition-colors text-center">
+            ดูสินค้าทั้งหมด
+          </a>
+          <a href="/contact" class="border-2 border-white text-white font-bold px-7 py-3 rounded-lg hover:bg-white/10 transition-colors text-center">
+            ติดต่อสอบถาม
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Grid -->
+  <CategoryGrid />
+
+  <!-- Featured Products -->
+  <section class="py-14 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="section-heading">สินค้าแนะนำ</h2>
+          <p class="text-gray-500 mt-1 text-sm">สินค้าขายดีที่ลูกค้าไว้วางใจ</p>
+        </div>
+        <a href="/products" class="text-brand font-semibold text-sm hover:underline hidden sm:block">
+          ดูทั้งหมด →
+        </a>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {featured.map((product) => (
+          <ProductCard product={product} />
+        ))}
+      </div>
+      <div class="text-center mt-8 sm:hidden">
+        <a href="/products" class="btn-outline">ดูสินค้าทั้งหมด</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Company blurb -->
+  <section class="py-14 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        <div>
+          <p class="text-brand font-semibold text-sm uppercase tracking-wider mb-3">เกี่ยวกับเรา</p>
+          <h2 class="section-heading mb-4">ผู้เชี่ยวชาญด้านอุปกรณ์<br />วัดแสดงผลอุตสาหกรรม</h2>
+          <p class="text-gray-600 leading-relaxed mb-4">
+            LEOS METER ดำเนินธุรกิจโดย <strong>บริษัท SME INTER จำกัด</strong> เราเป็นตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรมคุณภาพสูง ให้บริการกลุ่มโรงงานอุตสาหกรรม ผู้รับเหมาไฟฟ้า และวิศวกรระบบอัตโนมัติมามากกว่า 10 ปี
+          </p>
+          <p class="text-gray-600 leading-relaxed mb-6">
+            สินค้าทุกชิ้นได้รับการคัดเลือกจากผู้ผลิตที่เชื่อถือได้ พร้อมบริการให้คำปรึกษาทางเทคนิคและหลังการขายจากทีมงานผู้เชี่ยวชาญ
+          </p>
+          <a href="/about" class="btn-primary">อ่านเพิ่มเติม</a>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          {[
+            { icon: 'lucide:shield-check', label: 'สินค้ามีคุณภาพ', desc: 'คัดสรรจากผู้ผลิตชั้นนำ' },
+            { icon: 'lucide:headphones', label: 'บริการหลังการขาย', desc: 'ทีมงานพร้อมช่วยเหลือ' },
+            { icon: 'lucide:truck', label: 'จัดส่งรวดเร็ว', desc: 'ทั่วประเทศไทย' },
+            { icon: 'lucide:wrench', label: 'ติดตั้งและสอนใช้งาน', desc: 'โดยผู้เชี่ยวชาญ' },
+          ].map(({ icon, label, desc }) => (
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+              <Icon name={icon} class="w-7 h-7 text-brand mb-2" aria-hidden="true" />
+              <p class="font-semibold text-gray-900 text-sm">{label}</p>
+              <p class="text-xs text-gray-500 mt-0.5">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact CTA -->
+  <section class="bg-brand text-white py-14 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+      <h2 class="text-3xl font-extrabold mb-3">สนใจสินค้าหรือต้องการใบเสนอราคา?</h2>
+      <p class="text-blue-100 mb-8 max-w-xl mx-auto">
+        ทีมงานของเราพร้อมให้คำปรึกษาและจัดทำใบเสนอราคาโดยไม่มีค่าใช้จ่าย
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/contact" class="bg-white text-brand font-bold px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors">
+          ติดต่อสอบถาม
+        </a>
+        <a href="/products" class="border-2 border-white text-white font-bold px-8 py-3 rounded-lg hover:bg-white/10 transition-colors">
+          ดูสินค้าทั้งหมด
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

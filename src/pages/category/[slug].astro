@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'power-meter' } },
+    { params: { slug: 'jumbo-display' } },
+    { params: { slug: 'ntp-clock' } },
+    { params: { slug: 'haiwell' } },
+  ];
+}
+
+const categoryMeta: Record<string, { name: string; nameEn: string; desc: string }> = {
+  'power-meter':   { name: 'เพาเวอร์มิเตอร์',  nameEn: 'Power Meters',    desc: 'วัดและบันทึกการใช้พลังงานไฟฟ้า 3 เฟส ความแม่นยำสูง' },
+  'jumbo-display': { name: 'จอแสดงผลขนาดใหญ่', nameEn: 'Jumbo Displays',  desc: 'LED ตัวเลขขนาดใหญ่ มองเห็นชัดเจนจากระยะไกล' },
+  'ntp-clock':     { name: 'นาฬิกา NTP',        nameEn: 'NTP Clocks',      desc: 'ซิงค์เวลาแม่นยำผ่านเครือข่าย สำหรับงานอุตสาหกรรม' },
+  'haiwell':       { name: 'Haiwell PLC/HMI',   nameEn: 'Haiwell PLC/HMI', desc: 'PLC และ HMI สำหรับระบบควบคุมอัตโนมัติในโรงงาน' },
+};
+
+const { slug } = Astro.params;
+const cat = categoryMeta[slug]!;
+
+const allProducts = await getCollection('products');
+const products = allProducts
+  .filter((p) => p.data.category === slug)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title={cat.name}
+  description={`${cat.name} — ${cat.desc} จาก LEOS METER | SME INTER`}
+>
+  <!-- Page header -->
+  <section class="bg-gray-50 border-b border-gray-200 py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <nav class="text-sm text-gray-500 mb-3" aria-label="breadcrumb">
+        <a href="/products" class="hover:text-brand transition-colors">สินค้าทั้งหมด</a>
+        <span class="mx-1" aria-hidden="true">›</span>
+        <span class="text-gray-900">{cat.name}</span>
+      </nav>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">{cat.name}</h1>
+      <p class="text-gray-500 mt-2">{cat.desc} ({products.length} รายการ)</p>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {products.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {products.map((product) => (
+          <ProductCard product={product} />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-20">
+        <p class="text-gray-400 text-lg">ยังไม่มีสินค้าในหมวดนี้</p>
+        <a href="/products" class="btn-primary mt-6 inline-block">ดูสินค้าทั้งหมด</a>
+      </div>
+    )}
+
+    <div class="mt-10 pt-8 border-t border-gray-200">
+      <a href="/products" class="text-brand font-semibold text-sm hover:underline">
+        ← กลับสู่รายการสินค้าทั้งหมด
+      </a>
+    </div>
+  </div>
+</BaseLayout>

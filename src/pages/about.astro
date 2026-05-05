@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<BaseLayout
+  title="เกี่ยวกับเรา"
+  description="LEOS METER | SME INTER — ตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรมในประเทศไทย มากกว่า 10 ปีประสบการณ์"
+>
+  <!-- Page header -->
+  <section class="bg-gray-50 border-b border-gray-200 py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-brand font-semibold text-sm uppercase tracking-wider mb-2">About Us</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">เกี่ยวกับ LEOS METER</h1>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <section class="py-14 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div class="lg:col-span-2 space-y-6 text-gray-700 leading-relaxed">
+          <h2 class="text-2xl font-bold text-gray-900">บริษัท SME INTER จำกัด</h2>
+          <p>
+            LEOS METER ดำเนินธุรกิจโดย <strong>บริษัท SME INTER จำกัด</strong> ก่อตั้งขึ้นด้วยเจตนารมณ์ที่จะเป็นตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลสำหรับงานอุตสาหกรรมที่เชื่อถือได้ในประเทศไทย
+          </p>
+          <p>
+            เราให้บริการลูกค้าในกลุ่มโรงงานอุตสาหกรรม ผู้รับเหมาไฟฟ้าและระบบ วิศวกรระบบอัตโนมัติ และผู้จัดการอาคาร มาอย่างต่อเนื่องมากกว่า 10 ปี โดยยึดหลักการให้บริการที่ซื่อสัตย์และเชื่อถือได้เป็นสำคัญ
+          </p>
+          <p>
+            สินค้าทุกชิ้นในพอร์ตของเราได้รับการคัดเลือกอย่างพิถีพิถันจากผู้ผลิตที่ได้มาตรฐานสากล พร้อมเอกสารทางเทคนิคภาษาไทยและบริการหลังการขายจากทีมงานผู้เชี่ยวชาญ
+          </p>
+
+          <h3 class="text-xl font-bold text-gray-900 pt-4">สินค้าที่เราจำหน่าย</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start gap-2">
+              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
+              <span><strong>เพาเวอร์มิเตอร์</strong> — วัดและบันทึกการใช้พลังงานไฟฟ้า 3 เฟส ความแม่นยำสูง Class 0.2S ถึง 0.5S รองรับ Modbus และ Ethernet</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
+              <span><strong>จอแสดงผลขนาดใหญ่ (Jumbo Display)</strong> — LED ตัวเลขขนาด 4–8 นิ้ว มองเห็นชัดเจนจากระยะไกล รองรับอินพุตหลากหลาย</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
+              <span><strong>นาฬิกา NTP</strong> — ซิงค์เวลาแม่นยำผ่านเครือข่าย สำหรับบันทึกเหตุการณ์และระบบ SCADA</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
+              <span><strong>Haiwell PLC/HMI</strong> — คอนโทรลเลอร์และจอสัมผัสสำหรับระบบควบคุมอัตโนมัติในโรงงาน</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+          <div class="bg-brand/5 border border-brand/20 rounded-xl p-6">
+            <h3 class="font-bold text-gray-900 mb-4">ข้อมูลบริษัท</h3>
+            <dl class="space-y-3 text-sm">
+              <div>
+                <dt class="text-gray-500">ชื่อบริษัท</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5">บริษัท SME INTER จำกัด</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">แบรนด์</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5">LEOS METER</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">ที่ตั้ง</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5">กรุงเทพมหานคร, ประเทศไทย</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">โทรศัพท์</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5">02-xxx-xxxx</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">LINE Official</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5">@leosmeter</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="bg-gray-50 border border-gray-200 rounded-xl p-6">
+            <h3 class="font-bold text-gray-900 mb-4">จุดเด่นของเรา</h3>
+            <ul class="space-y-3 text-sm">
+              {[
+                'ประสบการณ์มากกว่า 10 ปี',
+                'ทีมงานผู้เชี่ยวชาญด้านเทคนิค',
+                'สต็อกสินค้าพร้อมจัดส่ง',
+                'บริการให้คำปรึกษาฟรี',
+                'รับประกันสินค้าตามเงื่อนไข',
+              ].map((item) => (
+                <li class="flex items-center gap-2">
+                  <Icon name="lucide:check" class="w-4 h-4 text-green-600 shrink-0" aria-hidden="true" />
+                  <span class="text-gray-700">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <a href="/contact" class="btn-primary w-full text-center block">
+            ติดต่อสอบถาม
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

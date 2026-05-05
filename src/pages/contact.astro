@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<BaseLayout
+  title="ติดต่อเรา"
+  description="ติดต่อ LEOS METER | SME INTER สอบถามราคาสินค้า ขอใบเสนอราคา หรือขอรับคำปรึกษาด้านเทคนิคได้ที่นี่"
+>
+  <!-- Page header -->
+  <section class="bg-gray-50 border-b border-gray-200 py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-brand font-semibold text-sm uppercase tracking-wider mb-2">Contact Us</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">ติดต่อสอบถาม</h1>
+    </div>
+  </section>
+
+  <section class="py-14 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+
+        <!-- Form (wider) -->
+        <div class="lg:col-span-3">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">ส่งข้อความหาเรา</h2>
+          <ContactForm />
+        </div>
+
+        <!-- Contact info sidebar -->
+        <div class="lg:col-span-2 space-y-6">
+          <h2 class="text-xl font-bold text-gray-900">ช่องทางอื่น</h2>
+
+          <div class="space-y-4">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center shrink-0">
+                <Icon name="lucide:phone" class="w-5 h-5 text-brand" aria-hidden="true" />
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900 text-sm">โทรศัพท์</p>
+                <p class="text-gray-600 text-sm mt-0.5">02-xxx-xxxx</p>
+                <p class="text-gray-400 text-xs mt-0.5">จ.–ศ. 08:30–17:30 น.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center shrink-0">
+                <Icon name="lucide:message-circle" class="w-5 h-5 text-brand" aria-hidden="true" />
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900 text-sm">LINE Official Account</p>
+                <p class="text-gray-600 text-sm mt-0.5">@leosmeter</p>
+                <p class="text-gray-400 text-xs mt-0.5">ตอบกลับเร็วที่สุด</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center shrink-0">
+                <Icon name="lucide:mail" class="w-5 h-5 text-brand" aria-hidden="true" />
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900 text-sm">อีเมล</p>
+                <p class="text-gray-600 text-sm mt-0.5">info@[placeholder]</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center shrink-0">
+                <Icon name="lucide:map-pin" class="w-5 h-5 text-brand" aria-hidden="true" />
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900 text-sm">ที่อยู่</p>
+                <p class="text-gray-600 text-sm mt-0.5 leading-relaxed">
+                  บริษัท SME INTER จำกัด<br />
+                  [ที่อยู่จะอัปเดตภายหลัง]<br />
+                  กรุงเทพมหานคร, ประเทศไทย
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Maps placeholder -->
+          <!-- TODO: Replace this div with a Google Maps iframe once the address is confirmed -->
+          <!-- Example:
+          <iframe
+            src="https://www.google.com/maps/embed?pb=..."
+            width="100%"
+            height="300"
+            style="border:0"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            class="rounded-xl border border-gray-200"
+          ></iframe>
+          -->
+          <div class="h-52 bg-gray-100 border border-gray-200 rounded-xl flex items-center justify-center text-gray-400 text-sm">
+            <div class="text-center">
+              <Icon name="lucide:map" class="w-8 h-8 mx-auto mb-2 opacity-40" aria-hidden="true" />
+              <p>แผนที่จะแสดงที่นี่</p>
+            </div>
+          </div>
+
+          <div class="bg-brand/5 border border-brand/20 rounded-xl p-4">
+            <p class="text-sm font-semibold text-brand mb-1">เวลาทำการ</p>
+            <p class="text-sm text-gray-600">วันจันทร์ – ศุกร์: 08:30 – 17:30 น.</p>
+            <p class="text-sm text-gray-600">วันเสาร์: 09:00 – 12:00 น.</p>
+            <p class="text-sm text-gray-400 mt-1">หยุดวันอาทิตย์และวันหยุดนักขัตฤกษ์</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
