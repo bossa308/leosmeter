@@ -1,99 +1,108 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import CategoryGrid from '../components/CategoryGrid.astro';
+import Hero from '../components/Hero.astro';
 import ProductCard from '../components/ProductCard.astro';
-import { getCollection } from 'astro:content';
+import SolutionCard from '../components/SolutionCard.astro';
+import BlogCard from '../components/BlogCard.astro';
+import ContactCTA from '../components/ContactCTA.astro';
 import { Icon } from 'astro-icon/components';
+import { getFeaturedProducts } from '../data/products';
+import { solutions } from '../data/solutions';
+import { site } from '../data/site';
+import { getCollection } from 'astro:content';
 
-const allProducts = await getCollection('products');
-const featured = allProducts
-  .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 4);
+const featured = getFeaturedProducts();
+const tutorials = (await getCollection('tutorial'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const stats = [
+  { value: '10+', label: 'ปีประสบการณ์', icon: 'lucide:award' },
+  { value: '100+', label: 'รายการสินค้า', icon: 'lucide:package' },
+  { value: 'Made in TH', label: 'ผลิตในไทย', icon: 'lucide:flag' },
+  { value: '24h', label: 'บริการหลังขาย', icon: 'lucide:headphones' },
+];
 ---
 
-<BaseLayout
-  title="หน้าแรก"
-  description="LEOS METER | SME INTER — ตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรม เพาเวอร์มิเตอร์ จอแสดงผล นาฬิกา NTP Haiwell PLC/HMI ราคาดี บริการหลังการขาย"
->
-  <!-- Hero -->
-  <section class="bg-gradient-to-br from-brand to-blue-800 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-      <div class="max-w-2xl">
-        <p class="text-blue-200 text-sm font-semibold uppercase tracking-widest mb-4">LEOS METER | SME INTER</p>
-        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-5">
-          ครบวงจร<br />
-          อุปกรณ์วัดแสดงผล<br />
-          อุตสาหกรรม
-        </h1>
-        <p class="text-blue-100 text-lg leading-relaxed mb-8">
-          เพาเวอร์มิเตอร์ · จอแสดงผลขนาดใหญ่ · นาฬิกา NTP · Haiwell PLC/HMI<br />
-          เลือกสรรสินค้าคุณภาพสูง บริการโดยผู้เชี่ยวชาญ
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <a href="/products" class="bg-white text-brand font-bold px-7 py-3 rounded-lg hover:bg-blue-50 transition-colors text-center">
-            ดูสินค้าทั้งหมด
-          </a>
-          <a href="/contact" class="border-2 border-white text-white font-bold px-7 py-3 rounded-lg hover:bg-white/10 transition-colors text-center">
-            ติดต่อสอบถาม
-          </a>
-        </div>
+<BaseLayout title="LEOS METER — เพาเวอร์มิเตอร์ จอแสดงผล นาฬิกา NTP อุตสาหกรรม" description="LEOS METER by SME INTER จำหน่ายเพาเวอร์มิเตอร์ จอแสดงผล LED นาฬิกา NTP และ Haiwell PLC/HMI สำหรับโรงงานอุตสาหกรรม ผลิตในไทย SAVE BUDGET GET BETTER">
+
+  <!-- 1. Hero -->
+  <Hero />
+
+  <!-- 2. Trust / Stats -->
+  <section class="bg-white border-b border-gray-100 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {stats.map(({ value, label, icon }) => (
+          <div class="flex flex-col items-center text-center gap-2">
+            <div class="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center">
+              <Icon name={icon} class="w-6 h-6 text-brand" aria-hidden="true" />
+            </div>
+            <p class="text-2xl font-extrabold text-navy">{value}</p>
+            <p class="text-sm text-gray-500">{label}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
-  <!-- Category Grid -->
-  <CategoryGrid />
-
-  <!-- Featured Products -->
-  <section class="py-14 bg-gray-50">
+  <!-- 3. Featured Products -->
+  <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex items-end justify-between mb-8">
         <div>
-          <h2 class="section-heading">สินค้าแนะนำ</h2>
-          <p class="text-gray-500 mt-1 text-sm">สินค้าขายดีที่ลูกค้าไว้วางใจ</p>
+          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">สินค้าแนะนำ</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-navy">สินค้าขายดี</h2>
         </div>
-        <a href="/products" class="text-brand font-semibold text-sm hover:underline hidden sm:block">
-          ดูทั้งหมด →
+        <a href="/products" class="text-sm font-semibold text-brand hover:underline hidden sm:block">
+          ดูสินค้าทั้งหมด →
         </a>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {featured.map((product) => (
           <ProductCard product={product} />
         ))}
       </div>
-      <div class="text-center mt-8 sm:hidden">
-        <a href="/products" class="btn-outline">ดูสินค้าทั้งหมด</a>
+      <div class="mt-6 text-center sm:hidden">
+        <a href="/products" class="text-sm font-semibold text-brand hover:underline">
+          ดูสินค้าทั้งหมด →
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Company blurb -->
-  <section class="py-14 px-4">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+  <!-- 4. About / Made in Thailand -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
         <div>
-          <p class="text-brand font-semibold text-sm uppercase tracking-wider mb-3">เกี่ยวกับเรา</p>
-          <h2 class="section-heading mb-4">ผู้เชี่ยวชาญด้านอุปกรณ์<br />วัดแสดงผลอุตสาหกรรม</h2>
+          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-2">เกี่ยวกับเรา</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-navy mb-4">
+            SME INTER — ผลิตในไทย<br />
+            <span class="text-brand">เพื่ออุตสาหกรรมไทย</span>
+          </h2>
           <p class="text-gray-600 leading-relaxed mb-4">
-            LEOS METER ดำเนินธุรกิจโดย <strong>บริษัท SME INTER จำกัด</strong> เราเป็นตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรมคุณภาพสูง ให้บริการกลุ่มโรงงานอุตสาหกรรม ผู้รับเหมาไฟฟ้า และวิศวกรระบบอัตโนมัติมามากกว่า 10 ปี
+            บริษัท SME INTER จำกัด ก่อตั้งมากกว่า 10 ปี มุ่งมั่นพัฒนาและผลิตอุปกรณ์วัดแสดงผล
+            สำหรับอุตสาหกรรมไทยโดยเฉพาะ ทั้งเพาเวอร์มิเตอร์, จอแสดงผล LED ขนาดใหญ่,
+            นาฬิกาซิงค์เวลา NTP และโซลูชัน IoT/SCADA
           </p>
           <p class="text-gray-600 leading-relaxed mb-6">
-            สินค้าทุกชิ้นได้รับการคัดเลือกจากผู้ผลิตที่เชื่อถือได้ พร้อมบริการให้คำปรึกษาทางเทคนิคและหลังการขายจากทีมงานผู้เชี่ยวชาญ
+            สินค้าทุกชิ้นออกแบบและผลิตในประเทศไทย รองรับสภาพแวดล้อมโรงงานจริง
+            มีทีมวิศวกรให้คำปรึกษาด้านเทคนิคและบริการหลังการขาย
           </p>
-          <a href="/about" class="btn-primary">อ่านเพิ่มเติม</a>
+          <p class="text-xl font-extrabold text-brand tracking-wider">SAVE BUDGET GET BETTER</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
           {[
-            { icon: 'lucide:shield-check', label: 'สินค้ามีคุณภาพ', desc: 'คัดสรรจากผู้ผลิตชั้นนำ' },
-            { icon: 'lucide:headphones', label: 'บริการหลังการขาย', desc: 'ทีมงานพร้อมช่วยเหลือ' },
-            { icon: 'lucide:truck', label: 'จัดส่งรวดเร็ว', desc: 'ทั่วประเทศไทย' },
-            { icon: 'lucide:wrench', label: 'ติดตั้งและสอนใช้งาน', desc: 'โดยผู้เชี่ยวชาญ' },
-          ].map(({ icon, label, desc }) => (
-            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-              <Icon name={icon} class="w-7 h-7 text-brand mb-2" aria-hidden="true" />
-              <p class="font-semibold text-gray-900 text-sm">{label}</p>
-              <p class="text-xs text-gray-500 mt-0.5">{desc}</p>
+            { icon: 'lucide:shield-check', title: 'คุณภาพมาตรฐาน', desc: 'ผ่านการทดสอบตามมาตรฐานอุตสาหกรรม' },
+            { icon: 'lucide:wrench', title: 'บริการหลังขาย', desc: 'ทีมวิศวกรพร้อมสนับสนุน' },
+            { icon: 'lucide:flag', title: 'Made in Thailand', desc: 'ออกแบบและผลิตในไทย' },
+            { icon: 'lucide:trending-down', title: 'ราคาเหมาะสม', desc: 'ประหยัดงบ ได้คุณภาพดีกว่า' },
+          ].map(({ icon, title, desc }) => (
+            <div class="bg-gray-50 rounded-xl p-4">
+              <Icon name={icon} class="w-6 h-6 text-brand mb-2" aria-hidden="true" />
+              <p class="font-bold text-navy text-sm mb-1">{title}</p>
+              <p class="text-xs text-gray-500 leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -101,21 +110,48 @@ const featured = allProducts
     </div>
   </section>
 
-  <!-- Contact CTA -->
-  <section class="bg-brand text-white py-14 px-4">
-    <div class="max-w-7xl mx-auto text-center">
-      <h2 class="text-3xl font-extrabold mb-3">สนใจสินค้าหรือต้องการใบเสนอราคา?</h2>
-      <p class="text-blue-100 mb-8 max-w-xl mx-auto">
-        ทีมงานของเราพร้อมให้คำปรึกษาและจัดทำใบเสนอราคาโดยไม่มีค่าใช้จ่าย
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="/contact" class="bg-white text-brand font-bold px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors">
-          ติดต่อสอบถาม
+  <!-- 5. Solutions -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-end justify-between mb-8">
+        <div>
+          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">โซลูชัน</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-navy">โซลูชันอุตสาหกรรม</h2>
+        </div>
+        <a href="/solutions" class="text-sm font-semibold text-brand hover:underline hidden sm:block">
+          ดูทั้งหมด →
         </a>
-        <a href="/products" class="border-2 border-white text-white font-bold px-8 py-3 rounded-lg hover:bg-white/10 transition-colors">
-          ดูสินค้าทั้งหมด
-        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {solutions.slice(0, 6).map((s) => (
+          <SolutionCard solution={s} />
+        ))}
       </div>
     </div>
   </section>
+
+  <!-- 6. Tutorial & FAQ -->
+  {tutorials.length > 0 && (
+    <section class="py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-end justify-between mb-8">
+          <div>
+            <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">ช่วยเหลือ</p>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-navy">บทความ & คู่มือ</h2>
+          </div>
+          <a href="/tutorial" class="text-sm font-semibold text-brand hover:underline hidden sm:block">
+            ดูทั้งหมด →
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {tutorials.map((post) => (
+            <BlogCard post={post} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- 7. Contact CTA -->
+  <ContactCTA />
 </BaseLayout>

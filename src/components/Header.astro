@@ -1,35 +1,42 @@
 ---
 import { Icon } from 'astro-icon/components';
-
-const navLinks = [
-  { href: '/', label: 'หน้าแรก' },
-  { href: '/products', label: 'สินค้า' },
-  { href: '/about', label: 'เกี่ยวกับเรา' },
-  { href: '/contact', label: 'ติดต่อ' },
-];
+import TopBar from './TopBar.astro';
+import MegaMenu from './MegaMenu.astro';
+import { site } from '../data/site';
 
 const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/about', label: 'เกี่ยวกับเรา' },
+  { href: '/tutorial', label: 'ช่วยเหลือ' },
+  { href: '/solutions', label: 'โซลูชัน' },
+  { href: '/contact', label: 'ติดต่อ' },
+];
 ---
 
+<TopBar />
 <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center h-16 gap-2">
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 text-brand font-bold text-lg shrink-0">
+      <a href="/" class="flex items-center gap-2 text-brand font-extrabold text-lg shrink-0 mr-2">
         <Icon name="lucide:zap" class="w-6 h-6" aria-hidden="true" />
         <span>LEOS METER</span>
       </a>
 
       <!-- Desktop nav -->
-      <ul class="hidden md:flex items-center gap-1">
+      <ul class="hidden md:flex items-center gap-0.5 flex-1">
+        <!-- Products mega menu -->
+        <MegaMenu />
+
         {navLinks.map(({ href, label }) => (
           <li>
             <a
               href={href}
-              class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                currentPath === href
+              class={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                currentPath.startsWith(href)
                   ? 'bg-brand/10 text-brand'
-                  : 'text-gray-600 hover:text-brand hover:bg-gray-50'
+                  : 'text-gray-700 hover:text-brand hover:bg-gray-50'
               }`}
             >
               {label}
@@ -38,34 +45,69 @@ const currentPath = Astro.url.pathname;
         ))}
       </ul>
 
-      <!-- Desktop CTA -->
-      <a href="/contact" class="hidden md:inline-flex items-center gap-2 btn-primary text-sm py-2 px-4">
-        <Icon name="lucide:phone" class="w-4 h-4" aria-hidden="true" />
-        ติดต่อสอบถาม
-      </a>
+      <!-- Desktop quick links -->
+      <div class="hidden md:flex items-center gap-2 ml-auto">
+        <a
+          href={site.line}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 bg-green-500 text-white font-bold text-sm px-3.5 py-2 rounded-lg hover:bg-green-400 transition-colors"
+        >
+          <Icon name="lucide:message-circle" class="w-4 h-4" aria-hidden="true" />
+          LINE
+        </a>
+        <a
+          href={site.youtube}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 bg-red-600 text-white font-bold text-sm px-3.5 py-2 rounded-lg hover:bg-red-500 transition-colors"
+        >
+          <Icon name="lucide:youtube" class="w-4 h-4" aria-hidden="true" />
+          LEOS Channel
+        </a>
+      </div>
 
       <!-- Mobile menu via <details> — zero JS -->
-      <details class="md:hidden relative">
+      <details class="md:hidden relative ml-auto">
         <summary class="list-none cursor-pointer p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand">
           <Icon name="lucide:menu" class="w-6 h-6" aria-hidden="true" />
           <span class="sr-only">เปิดเมนู</span>
         </summary>
-        <div class="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg py-2">
-          {navLinks.map(({ href, label }) => (
+        <div class="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-lg py-2">
+          <ul>
+            <!-- Mobile products submenu injected by MegaMenu -->
+            <MegaMenu />
+
+            {navLinks.map(({ href, label }) => (
+              <li>
+                <a
+                  href={href}
+                  class={`block px-4 py-3 text-sm font-semibold transition-colors ${
+                    currentPath.startsWith(href)
+                      ? 'text-brand bg-brand/5'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-brand'
+                  }`}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div class="border-t border-gray-100 mt-2 pt-3 pb-2 px-4 flex flex-col gap-2">
             <a
-              href={href}
-              class={`block px-4 py-3 text-sm font-medium transition-colors ${
-                currentPath === href
-                  ? 'text-brand bg-brand/5'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-brand'
-              }`}
+              href={site.line}
+              target="_blank"
+              rel="noopener"
+              class="flex items-center justify-center gap-2 bg-green-500 text-white font-bold text-sm py-2.5 rounded-lg"
             >
-              {label}
+              LINE {site.lineId}
             </a>
-          ))}
-          <div class="border-t border-gray-100 mt-2 pt-2 px-4 pb-1">
-            <a href="/contact" class="btn-primary text-sm py-2 w-full text-center block">
-              ติดต่อสอบถาม
+            <a
+              href={`tel:${site.phone[0].replace(/-/g, '')}`}
+              class="flex items-center justify-center gap-2 btn-primary text-sm py-2.5"
+            >
+              <Icon name="lucide:phone" class="w-4 h-4" aria-hidden="true" />
+              {site.phone[0]}
             </a>
           </div>
         </div>

@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'tutorial'>;
+}
+const { post } = Astro.props;
+
+const categoryLabel: Record<string, string> = {
+  tutorial: 'Tutorial',
+  qa:       'Q&A',
+  firmware: 'Firmware',
+  manual:   'Manual',
+};
+const categoryColor: Record<string, string> = {
+  tutorial: 'bg-brand/10 text-brand',
+  qa:       'bg-green-100 text-green-800',
+  firmware: 'bg-amber-100 text-amber-800',
+  manual:   'bg-purple-100 text-purple-800',
+};
+
+const { title, description, pubDate, category } = post.data;
+const dateStr = pubDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<article class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow flex flex-col">
+  <div class="flex items-center gap-2 mb-3">
+    <span class={`text-xs font-semibold px-2 py-0.5 rounded-full ${categoryColor[category]}`}>
+      {categoryLabel[category]}
+    </span>
+    <span class="text-xs text-gray-400">{dateStr}</span>
+  </div>
+  <h3 class="font-bold text-gray-900 text-sm leading-snug mb-2">{title}</h3>
+  <p class="text-sm text-gray-500 leading-relaxed flex-1">{description}</p>
+  <a
+    href={`/tutorial/${post.slug}`}
+    class="mt-4 text-sm text-brand font-semibold hover:underline inline-flex items-center gap-1"
+  >
+    อ่านเพิ่มเติม <span aria-hidden="true">→</span>
+  </a>
+</article>

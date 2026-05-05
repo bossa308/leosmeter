@@ -1,0 +1,47 @@
+---
+title: Haiwell Update Failed — วิธีแก้ปัญหา Firmware อัปเดตไม่สำเร็จ
+description: แนวทางแก้ไขปัญหา Haiwell PLC หรือ HMI ที่ไม่สามารถ Update Firmware ได้ ตรวจสอบทีละขั้นตอน
+pubDate: 2025-01-15
+category: firmware
+tags: [Haiwell, PLC, HMI, Firmware, Update]
+---
+
+## อาการ
+
+เมื่อทำการ Update Firmware ให้กับ Haiwell PLC หรือ HMI แล้วพบข้อความ **"Update Failed"** หรือโปรแกรม Haiwell Studio ค้างระหว่างดาวน์โหลด
+
+## สาเหตุที่พบบ่อย
+
+1. **Version Firmware ไม่ตรง** — Firmware ที่เลือกไม่รองรับรุ่นของ PLC/HMI ที่ใช้งาน
+2. **สายเชื่อมต่อมีปัญหา** — สาย USB หรือ RS-232 ชำรุดหรือหลวม
+3. **Driver ไม่ได้ติดตั้ง** — PC ไม่มี Driver สำหรับ USB Download Cable
+4. **Port ไม่ถูกต้อง** — เลือก COM Port ผิดใน Haiwell Studio
+5. **Firewall บล็อก** — Windows Firewall หรือ Antivirus สกัดการเชื่อมต่อ
+
+## ขั้นตอนแก้ไข
+
+### 1. ตรวจสอบ Version Firmware
+
+เปิด **Haiwell Studio → Help → About** เพื่อดู Version ปัจจุบัน จากนั้นดาวน์โหลด Firmware ที่ตรงกับรุ่นอุปกรณ์จากเว็บ Haiwell
+
+### 2. ตรวจสอบการเชื่อมต่อ
+
+- ถอดและเสียบสาย USB ใหม่
+- ลองใช้พอร์ต USB อื่น
+- ตรวจสอบ Device Manager ว่า COM Port ปรากฏ
+
+### 3. ติดตั้ง Driver ใหม่
+
+ดาวน์โหลด CH340 Driver (สำหรับ USB Download Cable ทั่วไป) แล้วติดตั้งใหม่
+
+### 4. ปิด Firewall ชั่วคราว
+
+ปิด Windows Defender Firewall ชั่วคราวระหว่าง Update แล้วเปิดใหม่หลังเสร็จ
+
+### 5. รัน Haiwell Studio ในฐานะ Administrator
+
+คลิกขวาที่ไอคอน Haiwell Studio → **Run as administrator** แล้วลอง Update ใหม่
+
+## ติดต่อสนับสนุน
+
+หากทำตามขั้นตอนข้างต้นแล้วยังไม่สำเร็จ ติดต่อทีม LEOS METER ผ่าน LINE Official **@leosmeter** พร้อมแจ้งรุ่น PLC/HMI และ Version Firmware ที่ใช้

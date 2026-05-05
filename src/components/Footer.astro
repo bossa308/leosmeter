@@ -1,69 +1,112 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { site } from '../data/site';
 
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-gray-900 text-gray-300 mt-16">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+<footer class="bg-navy text-gray-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
       <!-- Brand -->
-      <div>
-        <div class="flex items-center gap-2 text-white font-bold text-lg mb-3">
-          <Icon name="lucide:zap" class="w-5 h-5 text-blue-400" aria-hidden="true" />
+      <div class="sm:col-span-2 lg:col-span-1">
+        <div class="flex items-center gap-2 text-white font-extrabold text-lg mb-3">
+          <Icon name="lucide:zap" class="w-5 h-5 text-cyan shrink-0" aria-hidden="true" />
           <span>LEOS METER</span>
         </div>
-        <p class="text-sm leading-relaxed text-gray-400">
-          ตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรม<br />
-          เพาเวอร์มิเตอร์ · จอแสดงผล · นาฬิกา NTP<br />
-          Haiwell PLC/HMI
+        <p class="text-sm leading-relaxed text-gray-400 mb-4">
+          ผลิตและจัดจำหน่ายอุปกรณ์วัดแสดงผลสำหรับงานอุตสาหกรรม<br />
+          เพาเวอร์มิเตอร์ · จอแสดงผล · นาฬิกา NTP · Haiwell PLC/HMI
         </p>
-        <p class="text-xs text-gray-500 mt-3">บริษัท SME INTER จำกัด</p>
+        <p class="text-xs text-gray-500 mb-4">{site.company}</p>
+        <div class="flex items-center gap-2">
+          <a
+            href={site.line}
+            target="_blank"
+            rel="noopener"
+            class="bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-green-500 transition-colors"
+          >
+            LINE {site.lineId}
+          </a>
+          <a
+            href={site.youtube}
+            target="_blank"
+            rel="noopener"
+            class="bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-red-600 transition-colors"
+          >
+            YouTube
+          </a>
+          <a
+            href={site.facebook}
+            target="_blank"
+            rel="noopener"
+            class="bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded hover:bg-blue-600 transition-colors"
+          >
+            Facebook
+          </a>
+        </div>
       </div>
 
-      <!-- Quick links -->
+      <!-- Products -->
       <div>
-        <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider">สินค้า</h3>
+        <h3 class="text-white font-bold mb-4 text-sm uppercase tracking-wider">สินค้า</h3>
         <ul class="space-y-2 text-sm">
           <li><a href="/category/power-meter" class="hover:text-white transition-colors">เพาเวอร์มิเตอร์</a></li>
+          <li><a href="/category/multifunction-meter" class="hover:text-white transition-colors">มัลติฟังก์ชันมิเตอร์</a></li>
           <li><a href="/category/jumbo-display" class="hover:text-white transition-colors">จอแสดงผลขนาดใหญ่</a></li>
           <li><a href="/category/ntp-clock" class="hover:text-white transition-colors">นาฬิกา NTP</a></li>
-          <li><a href="/category/haiwell" class="hover:text-white transition-colors">Haiwell PLC/HMI</a></li>
-          <li><a href="/products" class="hover:text-white transition-colors">สินค้าทั้งหมด</a></li>
+          <li><a href="/category/haiwell-plc" class="hover:text-white transition-colors">Haiwell PLC</a></li>
+          <li><a href="/category/haiwell-hmi" class="hover:text-white transition-colors">Haiwell HMI</a></li>
+          <li><a href="/products" class="text-cyan hover:underline transition-colors mt-1 block">ดูสินค้าทั้งหมด →</a></li>
+        </ul>
+      </div>
+
+      <!-- Help -->
+      <div>
+        <h3 class="text-white font-bold mb-4 text-sm uppercase tracking-wider">ช่วยเหลือ</h3>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/tutorial" class="hover:text-white transition-colors">บทความ & คู่มือ</a></li>
+          <li><a href="/tutorial?category=firmware" class="hover:text-white transition-colors">อัพเดทเฟิร์มแวร์</a></li>
+          <li><a href="/tutorial?category=qa" class="hover:text-white transition-colors">คำถามที่พบบ่อย</a></li>
+          <li><a href="/solutions" class="hover:text-white transition-colors">โซลูชันอุตสาหกรรม</a></li>
+          <li><a href="/about" class="hover:text-white transition-colors">เกี่ยวกับเรา</a></li>
+          <li><a href="/contact" class="hover:text-white transition-colors">ติดต่อเรา</a></li>
         </ul>
       </div>
 
       <!-- Contact -->
       <div>
-        <h3 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider">ติดต่อเรา</h3>
+        <h3 class="text-white font-bold mb-4 text-sm uppercase tracking-wider">ติดต่อเรา</h3>
         <ul class="space-y-3 text-sm">
           <li class="flex items-start gap-2">
-            <Icon name="lucide:phone" class="w-4 h-4 mt-0.5 text-blue-400 shrink-0" aria-hidden="true" />
-            <span>02-xxx-xxxx (ตัวอย่าง)</span>
+            <Icon name="lucide:map-pin" class="w-4 h-4 mt-0.5 text-cyan shrink-0" aria-hidden="true" />
+            <span class="text-gray-400 leading-relaxed">{site.address}</span>
+          </li>
+          {site.phone.map((p) => (
+            <li class="flex items-center gap-2">
+              <Icon name="lucide:phone" class="w-4 h-4 text-cyan shrink-0" aria-hidden="true" />
+              <a href={`tel:${p.replace(/-/g, '')}`} class="hover:text-white transition-colors">{p}</a>
+            </li>
+          ))}
+          <li class="flex items-center gap-2">
+            <Icon name="lucide:mail" class="w-4 h-4 text-cyan shrink-0" aria-hidden="true" />
+            <a href={`mailto:${site.email}`} class="hover:text-white transition-colors">{site.email}</a>
           </li>
           <li class="flex items-start gap-2">
-            <Icon name="lucide:message-circle" class="w-4 h-4 mt-0.5 text-blue-400 shrink-0" aria-hidden="true" />
-            <span>LINE: @leosmeter</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <Icon name="lucide:mail" class="w-4 h-4 mt-0.5 text-blue-400 shrink-0" aria-hidden="true" />
-            <span>info@[placeholder]</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <Icon name="lucide:map-pin" class="w-4 h-4 mt-0.5 text-blue-400 shrink-0" aria-hidden="true" />
-            <span>กรุงเทพมหานคร, ประเทศไทย</span>
+            <Icon name="lucide:clock" class="w-4 h-4 mt-0.5 text-cyan shrink-0" aria-hidden="true" />
+            <span class="text-gray-400">{site.hours}</span>
           </li>
         </ul>
       </div>
     </div>
+  </div>
 
-    <div class="border-t border-gray-800 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
-      <p>© {year} LEOS METER | SME INTER. สงวนลิขสิทธิ์</p>
-      <div class="flex items-center gap-4">
-        <a href="/about" class="hover:text-gray-300 transition-colors">เกี่ยวกับเรา</a>
-        <a href="/contact" class="hover:text-gray-300 transition-colors">ติดต่อ</a>
-      </div>
+  <!-- Bottom bar -->
+  <div class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+      <p>© {year} LEOS METER | {site.company}. สงวนลิขสิทธิ์</p>
+      <p>Made in Thailand 🇹🇭</p>
     </div>
   </div>
 </footer>

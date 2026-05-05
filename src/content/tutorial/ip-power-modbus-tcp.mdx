@@ -1,0 +1,58 @@
+---
+title: ตัวอย่างการใช้ PLC อ่านค่า IP Power Meter ผ่าน Modbus TCP/IP
+description: ตัวอย่าง Ladder Diagram และ Function Block สำหรับ PLC อ่านค่าจาก IP Power Meter ผ่าน Ethernet Modbus TCP/IP
+pubDate: 2025-03-05
+category: tutorial
+tags: [IP Power Meter, PLC, Modbus TCP, Ladder, Tutorial]
+---
+
+## บทนำ
+
+IP Power Meter ของ LEOS รองรับการสื่อสารผ่าน **Modbus TCP/IP** ทำให้สามารถใช้ PLC อ่านค่าพลังงานโดยตรงผ่าน Ethernet โดยไม่ต้องใช้ RS-485 Converter
+
+## สิ่งที่ต้องการ
+
+- IP Power Meter รุ่น IPM หรือ PQM510
+- PLC ที่รองรับ Modbus TCP/IP Client (Haiwell, Siemens, Mitsubishi iQ-R ฯลฯ)
+- สาย Ethernet CAT5e ขึ้นไป
+- Switch Ethernet (ถ้าต้องการต่อหลายตัว)
+
+## การตั้งค่า IP Power Meter
+
+1. เชื่อมต่อสาย Ethernet เข้าพอร์ต LAN ของ IPM
+2. เปิดเว็บเบราว์เซอร์ → เข้า IP Address เริ่มต้น `192.168.1.100`
+3. ไปที่เมนู **Communication → Modbus TCP**
+4. ตั้งค่า **Slave ID** และ **Port** (ค่าเริ่มต้น Port 502)
+
+## Modbus Register Map (ตัวอย่าง)
+
+| Register | ค่า | Unit |
+|----------|-----|------|
+| 40001 | Voltage L1-N | V (×10) |
+| 40003 | Voltage L2-N | V (×10) |
+| 40005 | Voltage L3-N | V (×10) |
+| 40013 | Current L1 | A (×100) |
+| 40025 | Active Power Total | W |
+| 40031 | Power Factor Total | (×1000) |
+| 40201 | kWh Total | kWh (×10) |
+
+## ตัวอย่างโปรแกรม Haiwell PLC
+
+```
+; อ่านค่า Voltage L1 จาก IP Power Meter
+MODBUS_TCP_READ
+  IP:       192.168.1.100
+  Port:     502
+  Slave ID: 1
+  Function: 03 (Read Holding Registers)
+  Start:    40001
+  Count:    2
+  Dest:     D100  ; เก็บค่าใน D100-D101
+```
+
+ค่าใน D100 คือ Voltage L1-N × 10 หารด้วย 10 เพื่อแสดงผลจริง
+
+## หมายเหตุ
+
+- ตรวจสอบ Scaling Factor ในเอกสาร Modbus ของรุ่นที่ใช้งาน เนื่องจากอาจต่างกันตามรุ่น
+- ดาวน์โหลด Register Map ฉบับเต็มได้จากหน้าสินค้า หรือติดต่อ LINE **@leosmeter**

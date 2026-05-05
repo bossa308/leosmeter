@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('tutorial'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const categories = [
+  { value: 'tutorial', label: 'บทความ' },
+  { value: 'qa', label: 'คำถาม & คำตอบ' },
+  { value: 'firmware', label: 'เฟิร์มแวร์' },
+  { value: 'manual', label: 'คู่มือ' },
+] as const;
+
+const grouped = categories.map((cat) => ({
+  ...cat,
+  posts: allPosts.filter((p) => p.data.category === cat.value),
+})).filter((g) => g.posts.length > 0);
+---
+
+<BaseLayout
+  title="บทความ & คู่มือ — LEOS METER"
+  description="บทความ คู่มือ คำถามที่พบบ่อย และอัพเดทเฟิร์มแวร์สำหรับ LEOS METER และ Haiwell PLC/HMI"
+>
+  <!-- Page header -->
+  <section class="bg-navy text-white py-16 px-4">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">Help Center</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">บทความ & คู่มือ</h1>
+      <p class="text-blue-200">เอกสาร คู่มือ และบทความเทคนิคสำหรับสินค้า LEOS METER ทุกรุ่น</p>
+    </div>
+  </section>
+
+  <!-- Category tabs -->
+  <div class="bg-white border-b border-gray-200 sticky top-16 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex gap-1 overflow-x-auto py-3" aria-label="หมวดหมู่">
+        <a
+          href="#all"
+          class="text-sm font-semibold text-brand bg-brand/10 px-4 py-1.5 rounded-lg whitespace-nowrap"
+        >
+          ทั้งหมด ({allPosts.length})
+        </a>
+        {categories.map((cat) => {
+          const count = allPosts.filter((p) => p.data.category === cat.value).length;
+          if (count === 0) return null;
+          return (
+            <a
+              href={`#${cat.value}`}
+              class="text-sm font-semibold text-gray-600 hover:text-brand px-4 py-1.5 rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors"
+            >
+              {cat.label} ({count})
+            </a>
+          );
+        })}
+      </nav>
+    </div>
+  </div>
+
+  <!-- Posts by category -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-14" id="all">
+    {grouped.map((group) => (
+      <section id={group.value}>
+        <h2 class="text-xl font-extrabold text-navy mb-6">{group.label}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {group.posts.map((post) => (
+            <BlogCard post={post} />
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</BaseLayout>

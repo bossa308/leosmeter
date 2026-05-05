@@ -1,0 +1,82 @@
+---
+import { Icon } from 'astro-icon/components';
+import { site } from '../data/site';
+---
+
+<section class="relative bg-navy overflow-hidden">
+  <!-- Geometric background pattern -->
+  <div class="absolute inset-0 opacity-10 pointer-events-none" aria-hidden="true">
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)"/>
+    </svg>
+  </div>
+  <!-- Glow blobs -->
+  <div class="absolute top-0 left-1/4 w-96 h-96 bg-brand/30 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+  <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+    <div class="max-w-2xl">
+      <!-- Eyebrow -->
+      <div class="flex items-center gap-2 mb-6">
+        <span class="h-px w-10 bg-cyan"></span>
+        <span class="text-cyan text-xs font-bold uppercase tracking-widest">SME INTER</span>
+      </div>
+
+      <!-- Main heading -->
+      <h1 class="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-4">
+        LEOS METER
+      </h1>
+      <p class="text-xl md:text-2xl font-semibold text-blue-200 mb-2">
+        มุ่งมั่นพัฒนาสินค้าเพื่ออุตสาหกรรมไทย
+      </p>
+      <p class="text-lg text-cyan font-bold tracking-widest mb-8">
+        SAVE BUDGET GET BETTER
+      </p>
+
+      <!-- CTA buttons -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a
+          href="/products"
+          class="inline-flex items-center justify-center gap-2 bg-brand text-white font-bold px-7 py-3.5 rounded-lg hover:bg-brand/90 transition-colors"
+        >
+          <Icon name="lucide:grid" class="w-5 h-5" aria-hidden="true" />
+          ดูสินค้า
+        </a>
+        <a
+          href="/contact"
+          class="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/30 text-white font-bold px-7 py-3.5 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm"
+        >
+          <Icon name="lucide:phone" class="w-5 h-5" aria-hidden="true" />
+          ติดต่อเรา
+        </a>
+        <a
+          href={site.line}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center justify-center gap-2 bg-green-500 text-white font-bold px-7 py-3.5 rounded-lg hover:bg-green-400 transition-colors"
+        >
+          LINE Official
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating stat badges (desktop only) -->
+    <div class="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-3">
+      {[
+        { value: '10+', label: 'ปีประสบการณ์' },
+        { value: '100+', label: 'รายการสินค้า' },
+        { value: 'Made in TH', label: 'ผลิตในไทย' },
+      ].map(({ value, label }) => (
+        <div class="bg-white/10 border border-white/20 backdrop-blur-sm rounded-xl px-5 py-3 text-center">
+          <p class="text-white font-extrabold text-xl">{value}</p>
+          <p class="text-blue-200 text-xs mt-0.5">{label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

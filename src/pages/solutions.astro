@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SolutionCard from '../components/SolutionCard.astro';
+import ContactCTA from '../components/ContactCTA.astro';
+import { solutions } from '../data/solutions';
+---
+
+<BaseLayout
+  title="โซลูชันอุตสาหกรรม — LEOS METER"
+  description="โซลูชันอุปกรณ์วัดแสดงผลอุตสาหกรรม Factory Monitoring, Power Quality, MQTT IoT, Telegram Alarm, NTP Sync จาก LEOS METER"
+>
+  <!-- Page header -->
+  <section class="bg-navy text-white py-16 px-4">
+    <div class="max-w-7xl mx-auto">
+      <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">Solutions</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">โซลูชันอุตสาหกรรม</h1>
+      <p class="text-blue-200 text-lg max-w-2xl">
+        ระบบอุปกรณ์ LEOS METER ครอบคลุมทุกความต้องการของโรงงานอุตสาหกรรม
+        ตั้งแต่การวัดพลังงานไปจนถึง IoT และการแจ้งเตือนอัตโนมัติ
+      </p>
+    </div>
+  </section>
+
+  <!-- Solutions grid -->
+  <section class="py-14 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {solutions.map((s) => (
+          <SolutionCard solution={s} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ContactCTA />
+</BaseLayout>

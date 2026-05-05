@@ -1,17 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
+import ContactCTA from '../components/ContactCTA.astro';
+import { site } from '../data/site';
 ---
 
 <BaseLayout
-  title="เกี่ยวกับเรา"
-  description="LEOS METER | SME INTER — ตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรมในประเทศไทย มากกว่า 10 ปีประสบการณ์"
+  title="เกี่ยวกับเรา — LEOS METER | SME INTER"
+  description="บริษัท SME INTER จำกัด ผู้ผลิตและจัดจำหน่ายอุปกรณ์วัดแสดงผลอุตสาหกรรม LEOS METER มากกว่า 10 ปี ผลิตในไทย SAVE BUDGET GET BETTER"
 >
   <!-- Page header -->
-  <section class="bg-gray-50 border-b border-gray-200 py-12 px-4">
+  <section class="bg-navy text-white py-16 px-4">
     <div class="max-w-7xl mx-auto">
-      <p class="text-brand font-semibold text-sm uppercase tracking-wider mb-2">About Us</p>
-      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">เกี่ยวกับ LEOS METER</h1>
+      <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">About Us</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">เกี่ยวกับ LEOS METER</h1>
+      <p class="text-blue-200 text-lg max-w-xl">
+        มุ่งมั่นพัฒนาสินค้าเพื่ออุตสาหกรรมไทย — SAVE BUDGET GET BETTER
+      </p>
     </div>
   </section>
 
@@ -20,35 +25,31 @@ import { Icon } from 'astro-icon/components';
     <div class="max-w-7xl mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div class="lg:col-span-2 space-y-6 text-gray-700 leading-relaxed">
-          <h2 class="text-2xl font-bold text-gray-900">บริษัท SME INTER จำกัด</h2>
+          <h2 class="text-2xl font-extrabold text-navy">{site.company}</h2>
           <p>
-            LEOS METER ดำเนินธุรกิจโดย <strong>บริษัท SME INTER จำกัด</strong> ก่อตั้งขึ้นด้วยเจตนารมณ์ที่จะเป็นตัวแทนจำหน่ายอุปกรณ์วัดแสดงผลสำหรับงานอุตสาหกรรมที่เชื่อถือได้ในประเทศไทย
+            LEOS METER ดำเนินธุรกิจโดย <strong>{site.company}</strong> ก่อตั้งขึ้นด้วยเจตนารมณ์ที่จะเป็นผู้ผลิตและจัดจำหน่ายอุปกรณ์วัดแสดงผลสำหรับงานอุตสาหกรรมที่เชื่อถือได้ในประเทศไทย ด้วยแนวคิด <strong>"SAVE BUDGET GET BETTER"</strong> — ราคาเหมาะสม คุณภาพดีกว่า
           </p>
           <p>
             เราให้บริการลูกค้าในกลุ่มโรงงานอุตสาหกรรม ผู้รับเหมาไฟฟ้าและระบบ วิศวกรระบบอัตโนมัติ และผู้จัดการอาคาร มาอย่างต่อเนื่องมากกว่า 10 ปี โดยยึดหลักการให้บริการที่ซื่อสัตย์และเชื่อถือได้เป็นสำคัญ
           </p>
           <p>
-            สินค้าทุกชิ้นในพอร์ตของเราได้รับการคัดเลือกอย่างพิถีพิถันจากผู้ผลิตที่ได้มาตรฐานสากล พร้อมเอกสารทางเทคนิคภาษาไทยและบริการหลังการขายจากทีมงานผู้เชี่ยวชาญ
+            สินค้าทุกชิ้นออกแบบและผลิตในประเทศไทย รองรับสภาพแวดล้อมโรงงานจริง พร้อมเอกสารทางเทคนิคภาษาไทยและบริการหลังการขายจากทีมงานผู้เชี่ยวชาญ
           </p>
 
-          <h3 class="text-xl font-bold text-gray-900 pt-4">สินค้าที่เราจำหน่าย</h3>
-          <ul class="space-y-2">
-            <li class="flex items-start gap-2">
-              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
-              <span><strong>เพาเวอร์มิเตอร์</strong> — วัดและบันทึกการใช้พลังงานไฟฟ้า 3 เฟส ความแม่นยำสูง Class 0.2S ถึง 0.5S รองรับ Modbus และ Ethernet</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
-              <span><strong>จอแสดงผลขนาดใหญ่ (Jumbo Display)</strong> — LED ตัวเลขขนาด 4–8 นิ้ว มองเห็นชัดเจนจากระยะไกล รองรับอินพุตหลากหลาย</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
-              <span><strong>นาฬิกา NTP</strong> — ซิงค์เวลาแม่นยำผ่านเครือข่าย สำหรับบันทึกเหตุการณ์และระบบ SCADA</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
-              <span><strong>Haiwell PLC/HMI</strong> — คอนโทรลเลอร์และจอสัมผัสสำหรับระบบควบคุมอัตโนมัติในโรงงาน</span>
-            </li>
+          <h3 class="text-xl font-extrabold text-navy pt-4">สินค้าที่เราผลิตและจำหน่าย</h3>
+          <ul class="space-y-3">
+            {[
+              { title: 'เพาเวอร์มิเตอร์ & Power Quality Meter', desc: 'วัดและบันทึกการใช้พลังงานไฟฟ้า 3 เฟส ความแม่นยำสูง Class 0.2S–0.5S รองรับ Modbus RTU/TCP และ Ethernet' },
+              { title: 'จอแสดงผลขนาดใหญ่ (Jumbo Display / Big Display)', desc: 'LED ตัวเลขขนาด 2.3"–10" มองเห็นชัดเจนจากระยะไกล ผลิตตามความต้องการลูกค้า สั่งทำพิเศษได้' },
+              { title: 'นาฬิกาซิงค์เวลา NTP Clock', desc: 'ซิงค์เวลาแม่นยำผ่านเครือข่าย NTP/SNTP สำหรับบันทึกเหตุการณ์และระบบ SCADA — Made in Thailand' },
+              { title: 'IoT Gateway & Remote I/O', desc: 'LoRa RF Gateway, MQTT IoT Gateway, Telegram Notify, Ethernet I/O Module สำหรับงาน Industry 4.0' },
+              { title: 'Haiwell PLC/HMI', desc: 'PLC และ HMI สำหรับระบบควบคุมอัตโนมัติในโรงงาน รองรับ IEC 61131-3' },
+            ].map(({ title, desc }) => (
+              <li class="flex items-start gap-2">
+                <Icon name="lucide:check-circle" class="w-5 h-5 text-brand mt-0.5 shrink-0" aria-hidden="true" />
+                <span><strong>{title}</strong> — {desc}</span>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -59,23 +60,37 @@ import { Icon } from 'astro-icon/components';
             <dl class="space-y-3 text-sm">
               <div>
                 <dt class="text-gray-500">ชื่อบริษัท</dt>
-                <dd class="font-semibold text-gray-900 mt-0.5">บริษัท SME INTER จำกัด</dd>
+                <dd class="font-semibold text-gray-900 mt-0.5">{site.company}</dd>
               </div>
               <div>
-                <dt class="text-gray-500">แบรนด์</dt>
+                <dt class="text-gray-500">แบรนด์สินค้า</dt>
                 <dd class="font-semibold text-gray-900 mt-0.5">LEOS METER</dd>
               </div>
               <div>
-                <dt class="text-gray-500">ที่ตั้ง</dt>
-                <dd class="font-semibold text-gray-900 mt-0.5">กรุงเทพมหานคร, ประเทศไทย</dd>
+                <dt class="text-gray-500">ที่อยู่</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5 leading-relaxed">{site.address}</dd>
               </div>
+              {site.phone.map((p) => (
+                <div>
+                  <dt class="text-gray-500">โทรศัพท์</dt>
+                  <dd class="font-semibold text-gray-900 mt-0.5">
+                    <a href={`tel:${p.replace(/-/g, '')}`} class="hover:text-brand">{p}</a>
+                  </dd>
+                </div>
+              ))}
               <div>
-                <dt class="text-gray-500">โทรศัพท์</dt>
-                <dd class="font-semibold text-gray-900 mt-0.5">02-xxx-xxxx</dd>
+                <dt class="text-gray-500">อีเมล</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5">
+                  <a href={`mailto:${site.email}`} class="hover:text-brand">{site.email}</a>
+                </dd>
               </div>
               <div>
                 <dt class="text-gray-500">LINE Official</dt>
-                <dd class="font-semibold text-gray-900 mt-0.5">@leosmeter</dd>
+                <dd class="font-semibold text-gray-900 mt-0.5">{site.lineId}</dd>
+              </div>
+              <div>
+                <dt class="text-gray-500">เวลาทำการ</dt>
+                <dd class="font-semibold text-gray-900 mt-0.5">{site.hours}</dd>
               </div>
             </dl>
           </div>
@@ -85,10 +100,10 @@ import { Icon } from 'astro-icon/components';
             <ul class="space-y-3 text-sm">
               {[
                 'ประสบการณ์มากกว่า 10 ปี',
-                'ทีมงานผู้เชี่ยวชาญด้านเทคนิค',
+                'ผลิตในประเทศไทย Made in TH',
+                'ทีมวิศวกรให้คำปรึกษาฟรี',
                 'สต็อกสินค้าพร้อมจัดส่ง',
-                'บริการให้คำปรึกษาฟรี',
-                'รับประกันสินค้าตามเงื่อนไข',
+                'บริการหลังการขายระยะยาว',
               ].map((item) => (
                 <li class="flex items-center gap-2">
                   <Icon name="lucide:check" class="w-4 h-4 text-green-600 shrink-0" aria-hidden="true" />
@@ -98,11 +113,13 @@ import { Icon } from 'astro-icon/components';
             </ul>
           </div>
 
-          <a href="/contact" class="btn-primary w-full text-center block">
+          <a href="/contact" class="btn-primary w-full text-center block py-3">
             ติดต่อสอบถาม
           </a>
         </div>
       </div>
     </div>
   </section>
+
+  <ContactCTA />
 </BaseLayout>

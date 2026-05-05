@@ -1,0 +1,20 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { Solution } from '../data/solutions';
+
+interface Props {
+  solution: Solution;
+}
+const { solution } = Astro.props;
+---
+
+<div class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-brand/30 transition-all duration-200 flex gap-4">
+  <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+    <Icon name={solution.icon} class="w-5 h-5 text-brand" aria-hidden="true" />
+  </div>
+  <div>
+    <h3 class="font-bold text-gray-900 text-sm">{solution.title}</h3>
+    <p class="text-xs text-brand font-semibold mb-1">{solution.titleTh}</p>
+    <p class="text-sm text-gray-600 leading-relaxed">{solution.description}</p>
+  </div>
+</div>

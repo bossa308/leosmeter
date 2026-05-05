@@ -1,0 +1,44 @@
+---
+import { Icon } from 'astro-icon/components';
+import { site } from '../data/site';
+---
+
+<div class="bg-navy text-gray-300 text-xs border-b border-navy hidden md:block">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4">
+    <!-- Address -->
+    <div class="flex items-center gap-1.5 truncate">
+      <Icon name="lucide:map-pin" class="w-3.5 h-3.5 text-cyan shrink-0" aria-hidden="true" />
+      <span class="truncate">{site.address}</span>
+    </div>
+
+    <!-- Right: phone + email + social -->
+    <div class="flex items-center gap-4 shrink-0">
+      <div class="flex items-center gap-1.5">
+        <Icon name="lucide:phone" class="w-3.5 h-3.5 text-cyan" aria-hidden="true" />
+        <span>{site.phone.join(', ')}</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <Icon name="lucide:mail" class="w-3.5 h-3.5 text-cyan" aria-hidden="true" />
+        <a href={`mailto:${site.email}`} class="hover:text-white transition-colors">{site.email}</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <a
+          href={site.line}
+          target="_blank"
+          rel="noopener"
+          class="bg-green-500 text-white px-2.5 py-0.5 rounded text-xs font-semibold hover:bg-green-400 transition-colors flex items-center gap-1"
+        >
+          LINE
+        </a>
+        <a
+          href={site.youtube}
+          target="_blank"
+          rel="noopener"
+          class="bg-red-600 text-white px-2.5 py-0.5 rounded text-xs font-semibold hover:bg-red-500 transition-colors flex items-center gap-1"
+        >
+          YouTube
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
