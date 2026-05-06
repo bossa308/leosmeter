@@ -2,9 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import { products } from '../../data/products';
-import { categoryGroups } from '../../data/categories';
 
-const allSlugs = new Set(products.map((p) => p.category));
+const categories = [...new Set(products.map((p) => p.category))];
 ---
 
 <BaseLayout
@@ -14,49 +13,111 @@ const allSlugs = new Set(products.map((p) => p.category));
   <!-- Page header -->
   <section class="bg-gray-50 border-b border-gray-200 py-12 px-4">
     <div class="max-w-7xl mx-auto">
-      <p class="text-brand font-semibold text-sm uppercase tracking-wider mb-2">Products</p>
-      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900">สินค้าทั้งหมด</h1>
-      <p class="text-gray-500 mt-2">อุปกรณ์วัดแสดงผลอุตสาหกรรม {products.length} รายการ</p>
+      <p class="text-brand font-semibold text-xs uppercase tracking-widest mb-2">Products</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-navy">สินค้าทั้งหมด</h1>
+      <p class="text-gray-500 mt-2 text-sm">{products.length} รายการ</p>
     </div>
   </section>
 
-  <!-- Category jump links -->
-  <div class="bg-white border-b border-gray-200 sticky top-16 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav class="flex gap-1 overflow-x-auto py-3 scrollbar-none" aria-label="หมวดหมู่สินค้า">
-        {categoryGroups.map((group) => (
-          <a
-            href={`#${group.categories[0]?.slug ?? group.name}`}
-            class="text-sm font-semibold text-gray-600 hover:text-brand px-3 py-1.5 rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors shrink-0"
+  <!-- Search + Filter bar -->
+  <div class="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row gap-3">
+      <!-- Search input -->
+      <div class="relative flex-1 max-w-sm">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          id="search-input"
+          type="search"
+          placeholder="ค้นหาสินค้า..."
+          class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- Category filter pills -->
+      <nav id="cat-filter" class="flex gap-1.5 overflow-x-auto scrollbar-none flex-wrap" aria-label="กรองหมวดหมู่">
+        <button
+          data-cat="all"
+          class="cat-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-brand bg-brand text-white whitespace-nowrap shrink-0 transition-colors"
+        >
+          ทั้งหมด
+        </button>
+        {categories.map((cat) => (
+          <button
+            data-cat={cat}
+            class="cat-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:border-brand hover:text-brand whitespace-nowrap shrink-0 transition-colors"
           >
-            {group.name}
-          </a>
+            {cat}
+          </button>
         ))}
       </nav>
     </div>
   </div>
 
-  <!-- Products by category group -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
-    {categoryGroups.map((group) => {
-      const groupProducts = products.filter((p) =>
-        group.categories.some((c) => c.slug === p.category || c.slug === p.subcategory)
-      );
-      if (groupProducts.length === 0) return null;
-      return (
-        <section id={group.categories[0]?.slug ?? group.name}>
-          <div class="flex items-baseline justify-between mb-6">
-            <div>
-              <h2 class="text-xl md:text-2xl font-extrabold text-navy">{group.name}</h2>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {groupProducts.map((product) => (
-              <ProductCard product={product} />
-            ))}
-          </div>
-        </section>
-      );
-    })}
+  <!-- Product grid -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      {products.map((product) => (
+        <div
+          class="product-item"
+          data-name={product.name.toLowerCase()}
+          data-desc={product.shortDescription.toLowerCase()}
+          data-tags={product.tags.join(' ').toLowerCase()}
+          data-cat={product.category}
+        >
+          <ProductCard product={product} />
+        </div>
+      ))}
+    </div>
+
+    <!-- Empty state -->
+    <p id="no-results" class="hidden text-center text-gray-400 py-16 text-sm">
+      ไม่พบสินค้าที่ค้นหา
+    </p>
   </div>
 </BaseLayout>
+
+<script>
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const catBtns = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
+  const items = document.querySelectorAll<HTMLElement>('.product-item');
+  const noResults = document.getElementById('no-results')!;
+
+  let activeCat = 'all';
+  let searchQ = '';
+
+  function filter() {
+    let visible = 0;
+    items.forEach((item) => {
+      const matchCat = activeCat === 'all' || item.dataset.cat === activeCat;
+      const haystack = `${item.dataset.name} ${item.dataset.desc} ${item.dataset.tags}`;
+      const matchSearch = searchQ === '' || haystack.includes(searchQ);
+      const show = matchCat && matchSearch;
+      item.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    noResults.classList.toggle('hidden', visible > 0);
+  }
+
+  searchInput.addEventListener('input', () => {
+    searchQ = searchInput.value.toLowerCase().trim();
+    filter();
+  });
+
+  catBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeCat = btn.dataset.cat ?? 'all';
+      catBtns.forEach((b) => {
+        const isActive = b.dataset.cat === activeCat;
+        b.classList.toggle('bg-brand', isActive);
+        b.classList.toggle('text-white', isActive);
+        b.classList.toggle('border-brand', isActive);
+        b.classList.toggle('text-gray-600', !isActive);
+        b.classList.toggle('border-gray-200', !isActive);
+      });
+      filter();
+    });
+  });
+</script>
