@@ -1,36 +1,136 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SolutionCard from '../components/SolutionCard.astro';
-import ContactCTA from '../components/ContactCTA.astro';
+import { Icon } from 'astro-icon/components';
 import { solutions } from '../data/solutions';
+import { products } from '../data/products';
+import { site } from '../data/site';
+
+function getProduct(slug: string) {
+  return products.find((p) => p.slug === slug);
+}
 ---
 
 <BaseLayout
-  title="โซลูชันอุตสาหกรรม — LEOS METER"
-  description="โซลูชันอุปกรณ์วัดแสดงผลอุตสาหกรรม Factory Monitoring, Power Quality, MQTT IoT, Telegram Alarm, NTP Sync จาก LEOS METER"
+  title="โซลูชันอุตสาหกรรม — Energy Monitoring, Modbus, IoT, MQTT, Telegram | LEOS METER"
+  description="โซลูชันสำเร็จรูปสำหรับโรงงานอุตสาหกรรม: Energy Monitoring, Modbus Data Collection, MQTT IoT, Telegram Alarm, NTP Sync, Remote I/O จาก LEOS METER"
 >
   <!-- Page header -->
-  <section class="bg-navy text-white py-16 px-4">
-    <div class="max-w-7xl mx-auto">
-      <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">Solutions</p>
-      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">โซลูชันอุตสาหกรรม</h1>
-      <p class="text-blue-200 text-lg max-w-2xl">
-        ระบบอุปกรณ์ LEOS METER ครอบคลุมทุกความต้องการของโรงงานอุตสาหกรรม
-        ตั้งแต่การวัดพลังงานไปจนถึง IoT และการแจ้งเตือนอัตโนมัติ
+  <section class="bg-navy text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex items-center gap-1.5 text-xs text-blue-300 mb-4" aria-label="breadcrumb">
+        <a href="/" class="hover:text-white transition-colors">หน้าแรก</a>
+        <span class="text-blue-500">/</span>
+        <span class="text-white">Solutions</span>
+      </nav>
+      <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">Industrial Solutions</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-3">โซลูชันตามงานจริง</h1>
+      <p class="text-blue-200 max-w-2xl leading-relaxed">
+        ไม่รู้จะเลือกสินค้าไหน? เลือกตามโจทย์งานของคุณ
+        ทีม LEOS จะแนะนำอุปกรณ์และวิธีการติดตั้งที่เหมาะสมที่สุด
       </p>
     </div>
   </section>
 
-  <!-- Solutions grid -->
-  <section class="py-14 px-4">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {solutions.map((s) => (
-          <SolutionCard solution={s} />
-        ))}
+  <!-- Solutions list -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-8">
+    {solutions.map((sol) => {
+      const compat = (sol.compatibleProducts ?? []).map(getProduct).filter(Boolean);
+      return (
+        <article class="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow">
+          <div class="grid md:grid-cols-[1fr_200px]">
+
+            <!-- Content -->
+            <div class="p-7 md:p-8">
+              <div class="flex items-start gap-4 mb-5">
+                <div class="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center shrink-0">
+                  <Icon name={sol.icon} class="w-6 h-6 text-brand" aria-hidden="true" />
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-brand uppercase tracking-wider mb-1">{sol.title}</p>
+                  <h2 class="text-xl font-extrabold text-navy">{sol.titleTh}</h2>
+                </div>
+              </div>
+
+              {sol.problem && (
+                <div class="grid sm:grid-cols-2 gap-4 mb-5">
+                  <div class="bg-red-50 border border-red-100 rounded-xl p-4">
+                    <p class="text-xs font-bold text-red-600 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                      <Icon name="lucide:alert-circle" class="w-3.5 h-3.5" aria-hidden="true" />ปัญหาที่พบ
+                    </p>
+                    <p class="text-sm text-gray-700 leading-relaxed">{sol.problem}</p>
+                  </div>
+                  {sol.howItWorks && (
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                      <p class="text-xs font-bold text-brand uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                        <Icon name="lucide:lightbulb" class="w-3.5 h-3.5" aria-hidden="true" />วิธีแก้ปัญหา
+                      </p>
+                      <p class="text-sm text-gray-700 leading-relaxed">{sol.howItWorks}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {sol.benefits && sol.benefits.length > 0 && (
+                <div class="mb-5">
+                  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">ประโยชน์ที่ได้</p>
+                  <ul class="grid sm:grid-cols-2 gap-1.5">
+                    {sol.benefits.map((b) => (
+                      <li class="flex items-start gap-2 text-sm text-gray-700">
+                        <Icon name="lucide:check-circle" class="w-4 h-4 text-green-500 mt-0.5 shrink-0" aria-hidden="true" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {compat.length > 0 && (
+                <div>
+                  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">สินค้าที่แนะนำ</p>
+                  <div class="flex flex-wrap gap-2">
+                    {compat.map((p) => (
+                      <a href={`/products/${p!.slug}`} class="inline-flex items-center gap-1 text-xs font-semibold border border-brand/30 text-brand bg-brand/5 hover:bg-brand hover:text-white px-3 py-1.5 rounded-lg transition-colors">
+                        {p!.model && <span class="font-mono">{p!.model}</span>}
+                        {p!.model && <span>·</span>}
+                        <span>{p!.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <!-- CTA sidebar -->
+            <div class="bg-gray-50 border-t md:border-t-0 md:border-l border-gray-200 p-6 flex flex-col justify-center gap-3">
+              <a href={`/contact?solution=${encodeURIComponent(sol.id)}`} class="flex items-center justify-center gap-2 bg-brand text-white font-bold text-sm px-4 py-3 rounded-lg hover:bg-brand/90 transition-colors">
+                <Icon name="lucide:send" class="w-4 h-4" aria-hidden="true" />ปรึกษางานนี้
+              </a>
+              <a href={site.line} target="_blank" rel="noopener" class="flex items-center justify-center bg-green-500 text-white font-bold text-sm px-4 py-3 rounded-lg hover:bg-green-400 transition-colors">
+                LINE OA
+              </a>
+              <a href="/products" class="flex items-center justify-center border border-gray-300 text-gray-600 font-semibold text-sm px-4 py-2.5 rounded-lg hover:border-brand hover:text-brand transition-colors">
+                ดูสินค้า →
+              </a>
+            </div>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+
+  <!-- Bottom CTA -->
+  <section class="bg-brand py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">ไม่เจอโซลูชันที่ต้องการ?</h2>
+      <p class="text-blue-100 mb-7 max-w-lg mx-auto">ทีมวิศวกร LEOS ออกแบบระบบเฉพาะตามความต้องการ พร้อมรับทำ OEM และ Custom Firmware</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-white text-brand font-bold px-7 py-3.5 rounded-lg hover:bg-blue-50 transition-colors">
+          <Icon name="lucide:send" class="w-5 h-5" aria-hidden="true" />ปรึกษาฟรี
+        </a>
+        <a href="/product-selector" class="inline-flex items-center justify-center gap-2 bg-white/20 border border-white/40 text-white font-bold px-7 py-3.5 rounded-lg hover:bg-white/30 transition-colors">
+          <Icon name="lucide:sliders" class="w-5 h-5" aria-hidden="true" />Product Selector
+        </a>
       </div>
     </div>
   </section>
-
-  <ContactCTA />
 </BaseLayout>

@@ -1,74 +1,145 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlogCard from '../../components/BlogCard.astro';
+import { Icon } from 'astro-icon/components';
 import { getCollection } from 'astro:content';
+import { site } from '../../data/site';
 
 const allPosts = (await getCollection('tutorial'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const categories = [
-  { value: 'tutorial', label: 'บทความ' },
-  { value: 'qa', label: 'คำถาม & คำตอบ' },
-  { value: 'firmware', label: 'เฟิร์มแวร์' },
-  { value: 'manual', label: 'คู่มือ' },
+  { value: 'tutorial', label: 'Tutorial',       icon: 'lucide:book-open',    desc: 'วิธีการตั้งค่าและใช้งาน' },
+  { value: 'qa',       label: 'Q&A / FAQ',       icon: 'lucide:help-circle',  desc: 'คำถามที่พบบ่อย' },
+  { value: 'firmware', label: 'Firmware Update', icon: 'lucide:cpu',          desc: 'อัปเดตเฟิร์มแวร์' },
+  { value: 'manual',   label: 'Manual',          icon: 'lucide:file-text',    desc: 'คู่มือการใช้งาน' },
 ] as const;
 
 const grouped = categories.map((cat) => ({
   ...cat,
   posts: allPosts.filter((p) => p.data.category === cat.value),
 })).filter((g) => g.posts.length > 0);
+
+const quickLinks = [
+  { icon: 'lucide:git-branch',   label: 'วิธีต่อสาย RS485',           href: '/tutorial?q=rs485' },
+  { icon: 'lucide:network',      label: 'วิธีตั้งค่า Modbus',          href: '/tutorial?q=modbus' },
+  { icon: 'lucide:wifi-off',     label: 'แก้ปัญหาสื่อสารไม่ได้',       href: '/tutorial?q=communication' },
+  { icon: 'lucide:cpu',          label: 'วิธีอัปเกรด Firmware',        href: '/tutorial?q=firmware' },
+  { icon: 'lucide:download',     label: 'วิธีโหลดคู่มือ',             href: '/downloads' },
+  { icon: 'lucide:shopping-bag', label: 'วิธีเลือกสินค้า',             href: '/product-selector' },
+];
 ---
 
 <BaseLayout
-  title="บทความ & คู่มือ — LEOS METER"
-  description="บทความ คู่มือ คำถามที่พบบ่อย และอัพเดทเฟิร์มแวร์สำหรับ LEOS METER และ Haiwell PLC/HMI"
+  title="Tutorial & Support — Modbus, MQTT, Wiring, Firmware | LEOS METER"
+  description="บทความ คู่มือ Q&A และ Firmware Update สำหรับสินค้า LEOS METER: Modbus RTU/TCP, MQTT, Wiring Diagram, NTP, LoRa และ Haiwell PLC/HMI"
 >
   <!-- Page header -->
-  <section class="bg-navy text-white py-16 px-4">
-    <div class="max-w-7xl mx-auto">
+  <section class="bg-navy text-white py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex items-center gap-1.5 text-xs text-blue-300 mb-4" aria-label="breadcrumb">
+        <a href="/" class="hover:text-white transition-colors">หน้าแรก</a>
+        <span class="text-blue-500">/</span>
+        <span class="text-white">Tutorial & Support</span>
+      </nav>
       <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">Help Center</p>
-      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">บทความ & คู่มือ</h1>
-      <p class="text-blue-200">เอกสาร คู่มือ และบทความเทคนิคสำหรับสินค้า LEOS METER ทุกรุ่น</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">Tutorial & Technical Support</h1>
+      <p class="text-blue-200 max-w-xl">บทความ คู่มือ FAQ และ Firmware Update สำหรับสินค้า LEOS METER ทุกรุ่น</p>
     </div>
   </section>
 
-  <!-- Category tabs -->
-  <div class="bg-white border-b border-gray-200 sticky top-16 z-40">
+  <!-- Quick links -->
+  <section class="bg-white border-b border-gray-200 py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav class="flex gap-1 overflow-x-auto py-3" aria-label="หมวดหมู่">
-        <a
-          href="#all"
-          class="text-sm font-semibold text-brand bg-brand/10 px-4 py-1.5 rounded-lg whitespace-nowrap"
-        >
-          ทั้งหมด ({allPosts.length})
-        </a>
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">หัวข้อที่พบบ่อย</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        {quickLinks.map(({ icon, label, href }) => (
+          <a href={href} class="group flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 hover:border-brand hover:bg-brand/5 transition-all">
+            <Icon name={icon} class="w-4 h-4 text-gray-400 group-hover:text-brand shrink-0 transition-colors" aria-hidden="true" />
+            <span class="text-xs font-semibold text-gray-700 group-hover:text-brand transition-colors leading-tight">{label}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Category summary cards -->
+  <section class="bg-gray-50 border-b border-gray-200 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         {categories.map((cat) => {
           const count = allPosts.filter((p) => p.data.category === cat.value).length;
-          if (count === 0) return null;
           return (
-            <a
-              href={`#${cat.value}`}
-              class="text-sm font-semibold text-gray-600 hover:text-brand px-4 py-1.5 rounded-lg hover:bg-gray-50 whitespace-nowrap transition-colors"
-            >
-              {cat.label} ({count})
+            <a href={`#${cat.value}`} class="group bg-white border border-gray-200 rounded-xl p-4 hover:shadow-sm hover:border-brand/30 transition-all text-center">
+              <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:bg-brand/20 transition-colors">
+                <Icon name={cat.icon} class="w-5 h-5 text-brand" aria-hidden="true" />
+              </div>
+              <p class="font-bold text-navy text-sm">{cat.label}</p>
+              <p class="text-xs text-gray-400 mt-0.5">{cat.desc}</p>
+              <p class="text-xs font-semibold text-brand mt-1">{count} บทความ</p>
             </a>
           );
         })}
-      </nav>
+      </div>
     </div>
-  </div>
+  </section>
 
   <!-- Posts by category -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-14" id="all">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-14">
     {grouped.map((group) => (
-      <section id={group.value}>
-        <h2 class="text-xl font-extrabold text-navy mb-6">{group.label}</h2>
+      <section id={group.value} class="scroll-mt-24">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-9 h-9 bg-brand/10 rounded-lg flex items-center justify-center">
+            <Icon name={group.icon} class="w-5 h-5 text-brand" aria-hidden="true" />
+          </div>
+          <div>
+            <h2 class="text-xl font-extrabold text-navy">{group.label}</h2>
+            <p class="text-xs text-gray-400">{group.desc}</p>
+          </div>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {group.posts.map((post) => (
-            <BlogCard post={post} />
-          ))}
+          {group.posts.map((post) => <BlogCard post={post} />)}
         </div>
       </section>
     ))}
+
+    {allPosts.length === 0 && (
+      <div class="text-center py-20">
+        <Icon name="lucide:book-open" class="w-12 h-12 text-gray-200 mx-auto mb-3" aria-hidden="true" />
+        <p class="text-gray-500">กำลังเพิ่มบทความเร็วๆ นี้</p>
+      </div>
+    )}
   </div>
+
+  <!-- Support CTA -->
+  <section class="bg-gray-50 border-t border-gray-200 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="bg-white border border-gray-200 rounded-xl p-5 text-center">
+          <Icon name="lucide:message-circle" class="w-8 h-8 text-green-500 mx-auto mb-3" aria-hidden="true" />
+          <p class="font-bold text-navy text-sm mb-1">ถามผ่าน LINE OA</p>
+          <p class="text-xs text-gray-500 mb-3">ตอบทุกวัน {site.hours}</p>
+          <a href={site.line} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 bg-green-500 text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-green-400 transition-colors">
+            {site.lineId}
+          </a>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-5 text-center">
+          <Icon name="lucide:download" class="w-8 h-8 text-brand mx-auto mb-3" aria-hidden="true" />
+          <p class="font-bold text-navy text-sm mb-1">Download Center</p>
+          <p class="text-xs text-gray-500 mb-3">Datasheet · คู่มือ · Firmware · Register Map</p>
+          <a href="/downloads" class="inline-flex items-center gap-1.5 bg-brand text-white font-bold text-sm px-4 py-2 rounded-lg hover:bg-brand/90 transition-colors">
+            ไปหน้า Download
+          </a>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-5 text-center">
+          <Icon name="lucide:phone" class="w-8 h-8 text-brand mx-auto mb-3" aria-hidden="true" />
+          <p class="font-bold text-navy text-sm mb-1">โทรหาทีมสนับสนุน</p>
+          <p class="text-xs text-gray-500 mb-3">{site.hours}</p>
+          <a href={`tel:${site.phone[0].replace(/-/g, '')}`} class="inline-flex items-center gap-1.5 border border-brand text-brand font-bold text-sm px-4 py-2 rounded-lg hover:bg-brand hover:text-white transition-colors">
+            {site.phone[0]}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

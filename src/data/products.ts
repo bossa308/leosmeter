@@ -3,6 +3,19 @@ export interface ProductSpec {
   value: string;
 }
 
+export interface ProductDownload {
+  label: string;     // e.g. "Datasheet", "Manual", "Firmware"
+  type: 'datasheet' | 'manual' | 'firmware' | 'software' | 'wiring' | 'register-map' | 'quickstart';
+  filename: string;  // e.g. "PQM510-Manual-TH.pdf"
+  lang?: string;     // 'TH' | 'EN'
+  version?: string;
+}
+
+export interface ProductFAQ {
+  q: string;
+  a: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -17,6 +30,12 @@ export interface Product {
   specs: ProductSpec[];
   relatedProducts?: string[];
   featured?: boolean;
+  model?: string;
+  protocols?: string[];
+  inputTypes?: string[];
+  applications?: string[];
+  downloads?: ProductDownload[];
+  faqs?: ProductFAQ[];
 }
 
 export const products: Product[] = [
@@ -48,6 +67,17 @@ export const products: Product[] = [
     ],
     relatedProducts: ['iot-mix-io', 'modbus-scanner'],
     featured: true,
+    model: 'LoRa-GW-01',
+    protocols: ['LoRa', 'Modbus TCP', 'MQTT', 'RS485'],
+    applications: ['LoRa Wireless Monitoring', 'Modbus Data Logger', 'Remote Alarm Notification'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'LoRa-GW-Datasheet.pdf', lang: 'TH' },
+      { label: 'คู่มือการใช้งาน', type: 'manual', filename: 'LoRa-GW-Manual-TH.pdf', lang: 'TH' },
+    ],
+    faqs: [
+      { q: 'ส่งข้อมูลได้ไกลแค่ไหน?', a: 'ในพื้นที่โล่ง (Line of Sight) ส่งได้สูงสุด 2 กิโลเมตร ในโรงงานทั่วไปประมาณ 200–500 เมตร' },
+      { q: 'รองรับกี่ Node?', a: 'รองรับ LoRa Slave ได้สูงสุด 32 Node ต่อ 1 Gateway' },
+    ],
   },
   {
     id: 'pqm510',
@@ -77,6 +107,19 @@ export const products: Product[] = [
     ],
     relatedProducts: ['ip-power-meter', 'process-meter'],
     featured: true,
+    model: 'PQM510',
+    protocols: ['Modbus TCP', 'Modbus RTU', 'RS485', 'Ethernet'],
+    inputTypes: ['AC 3-Phase', 'AC 1-Phase'],
+    applications: ['Energy Monitoring', 'Power Quality Analysis', 'Factory Dashboard'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'PQM510-Datasheet.pdf', lang: 'TH' },
+      { label: 'คู่มือการใช้งาน', type: 'manual', filename: 'PQM510-Manual-TH.pdf', lang: 'TH' },
+      { label: 'Modbus Register Map', type: 'register-map', filename: 'PQM510-RegisterMap.pdf', lang: 'EN' },
+    ],
+    faqs: [
+      { q: 'วัด THD ได้ถึง Order เท่าไร?', a: 'วัด Individual Harmonics ได้ถึง Order 63 ตาม IEC61000-4-7' },
+      { q: 'เชื่อมต่อ SCADA ได้มั้ย?', a: 'ได้ผ่าน Modbus TCP/IP ผ่าน Ethernet หรือ Modbus RTU ผ่าน RS-485' },
+    ],
   },
   {
     id: 'telegram-gateway',
@@ -104,6 +147,13 @@ export const products: Product[] = [
     ],
     relatedProducts: ['iot-mix-io', 'lora-rf-gateway'],
     featured: true,
+    model: 'TG-GW-01',
+    protocols: ['Modbus RTU', 'Modbus TCP', 'RS485', 'Ethernet', 'Telegram Bot API'],
+    applications: ['Remote Alarm Notification', 'Factory Dashboard', 'Modbus Data Logger'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'TelegramGW-Datasheet.pdf', lang: 'TH' },
+      { label: 'Quick Start Guide', type: 'quickstart', filename: 'TelegramGW-QuickStart.pdf', lang: 'TH' },
+    ],
   },
   {
     id: 'big-display-custom',
@@ -133,6 +183,14 @@ export const products: Product[] = [
     ],
     relatedProducts: ['ntp-clock', 'ip-message-display'],
     featured: true,
+    model: 'BD-Custom',
+    protocols: ['Modbus RTU', 'RS485'],
+    inputTypes: ['RS485', '4-20mA', '0-10V'],
+    applications: ['Production Counter', 'Factory Dashboard', 'Large Display'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'BigDisplay-Datasheet.pdf', lang: 'TH' },
+      { label: 'Wiring Diagram', type: 'wiring', filename: 'BigDisplay-Wiring.pdf', lang: 'TH' },
+    ],
   },
   {
     id: 'iot-mix-io',
@@ -161,6 +219,14 @@ export const products: Product[] = [
     ],
     relatedProducts: ['lora-rf-gateway', 'telegram-gateway'],
     featured: true,
+    model: '23-66',
+    protocols: ['MQTT', 'Modbus TCP', 'Ethernet'],
+    inputTypes: ['Digital 24V DC', 'Analog 4-20mA', '0-10V'],
+    applications: ['IoT Cloud', 'Remote I/O', 'Modbus Data Logger'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'IoTMixIO-Datasheet.pdf', lang: 'TH' },
+      { label: 'คู่มือการใช้งาน', type: 'manual', filename: 'IoTMixIO-Manual-TH.pdf', lang: 'TH' },
+    ],
   },
   {
     id: 'ip-message-display',
@@ -187,6 +253,12 @@ export const products: Product[] = [
     ],
     relatedProducts: ['big-display-custom', 'iot-mix-io'],
     featured: false,
+    model: 'IP-MD-01',
+    protocols: ['MQTT', 'Modbus TCP', 'Ethernet'],
+    applications: ['Production Counter', 'Factory Dashboard', 'Andon System'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'IPMessageDisplay-Datasheet.pdf', lang: 'TH' },
+    ],
   },
   {
     id: 'ntp-clock',
@@ -215,6 +287,13 @@ export const products: Product[] = [
     ],
     relatedProducts: ['big-display-custom', 'ethernet-io'],
     featured: true,
+    model: 'NTP-CK-01',
+    protocols: ['NTP', 'SNTP', 'RS485', 'Ethernet'],
+    applications: ['NTP Clock System', 'Factory Dashboard'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'NTPClock-Datasheet.pdf', lang: 'TH' },
+      { label: 'คู่มือการใช้งาน', type: 'manual', filename: 'NTPClock-Manual-TH.pdf', lang: 'TH' },
+    ],
   },
   {
     id: 'ip-power-meter',
@@ -244,6 +323,18 @@ export const products: Product[] = [
     ],
     relatedProducts: ['pqm510', 'process-meter'],
     featured: false,
+    model: 'IPM-96',
+    protocols: ['Modbus TCP', 'Modbus RTU', 'RS485', 'Ethernet'],
+    inputTypes: ['AC 3-Phase'],
+    applications: ['Energy Monitoring', 'Factory Dashboard'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'IPPowerMeter-Datasheet.pdf', lang: 'TH' },
+      { label: 'Modbus Register Map', type: 'register-map', filename: 'IPPowerMeter-RegisterMap.pdf', lang: 'EN' },
+    ],
+    faqs: [
+      { q: 'เชื่อมต่อ SCADA ได้ไหม?', a: 'ได้ผ่าน Modbus TCP/IP โดยตรง ไม่ต้องใช้ Converter' },
+      { q: 'ต่อกับ PLC ได้มั้ย?', a: 'ได้ทั้ง Modbus RTU (RS-485) และ Modbus TCP/IP (Ethernet)' },
+    ],
   },
   {
     id: 'ethernet-io',
@@ -272,6 +363,13 @@ export const products: Product[] = [
     ],
     relatedProducts: ['iot-mix-io', 'lora-rf-gateway'],
     featured: false,
+    model: 'ETH-IO-01',
+    protocols: ['Modbus TCP', 'Ethernet'],
+    inputTypes: ['Digital 24V DC', 'Analog 4-20mA', '0-10V'],
+    applications: ['Remote I/O', 'Factory Dashboard', 'Modbus Data Logger'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'EthernetIO-Datasheet.pdf', lang: 'TH' },
+    ],
   },
   {
     id: 'process-meter',
@@ -300,6 +398,14 @@ export const products: Product[] = [
     ],
     relatedProducts: ['ip-power-meter', 'pqm510'],
     featured: false,
+    model: 'PM-96',
+    protocols: ['Modbus RTU', 'RS485'],
+    inputTypes: ['4-20mA', '0-10V', 'Thermocouple', 'PT100'],
+    applications: ['Temperature Monitoring', 'Tank Level Monitoring', 'Factory Dashboard'],
+    downloads: [
+      { label: 'Datasheet', type: 'datasheet', filename: 'ProcessMeter-Datasheet.pdf', lang: 'TH' },
+      { label: 'คู่มือการใช้งาน', type: 'manual', filename: 'ProcessMeter-Manual-TH.pdf', lang: 'TH' },
+    ],
   },
 ];
 
@@ -311,3 +417,9 @@ export const getFeaturedProducts = (): Product[] =>
 
 export const getProductsByCategory = (category: string): Product[] =>
   products.filter((p) => p.category === category || p.subcategory === category);
+
+export const getAllProtocols = (): string[] =>
+  [...new Set(products.flatMap((p) => p.protocols ?? []))].sort();
+
+export const getAllApplications = (): string[] =>
+  [...new Set(products.flatMap((p) => p.applications ?? []))].sort();

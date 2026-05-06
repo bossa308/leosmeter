@@ -1,10 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
 import ProductCard from '../components/ProductCard.astro';
 import SolutionCard from '../components/SolutionCard.astro';
 import BlogCard from '../components/BlogCard.astro';
-import ContactCTA from '../components/ContactCTA.astro';
 import { Icon } from 'astro-icon/components';
 import { getFeaturedProducts } from '../data/products';
 import { solutions } from '../data/solutions';
@@ -16,142 +14,271 @@ const tutorials = (await getCollection('tutorial'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 
-const stats = [
-  { value: '10+', label: 'ปีประสบการณ์', icon: 'lucide:award' },
-  { value: '100+', label: 'รายการสินค้า', icon: 'lucide:package' },
-  { value: 'Made in TH', label: 'ผลิตในไทย', icon: 'lucide:flag' },
-  { value: '24h', label: 'บริการหลังขาย', icon: 'lucide:headphones' },
+const categoryHighlights = [
+  { slug: 'ac-meter',       icon: 'lucide:zap',         label: 'AC / Power Meter',          desc: 'Single/3-Phase · Modbus RTU/TCP · Class 0.2S–1' },
+  { slug: 'process-meter',  icon: 'lucide:gauge',        label: 'Process Meter',              desc: '4-20mA · Thermocouple · PT100 · RS485' },
+  { slug: 'ethernet-io',    icon: 'lucide:cpu',          label: 'Ethernet & RS485 I/O',       desc: 'Modbus TCP/RTU · DI/DO/AI/AO · SCADA ready' },
+  { slug: 'iot-mqtt',       icon: 'lucide:cloud',        label: 'IoT MQTT Gateway',           desc: 'MQTT · Modbus → Cloud · Node-RED · ThingsBoard' },
+  { slug: 'notify-telegram',icon: 'lucide:bell',         label: 'Telegram Alarm',             desc: 'Modbus → Telegram · Auto notify · No coding' },
+  { slug: 'lora',           icon: 'lucide:radio',        label: 'LoRa Wireless',              desc: 'Wireless I/O · 2 km · 433 MHz · No cable' },
+  { slug: 'big-display',    icon: 'lucide:monitor',      label: 'Big LED Display',            desc: 'Custom size · Modbus · MQTT · Made in Thailand' },
+  { slug: 'ntp-clock',      icon: 'lucide:clock',        label: 'NTP Clock System',           desc: 'NTP/SNTP sync · LED display · Battery backup' },
+];
+
+const protocolBadges = ['Modbus RTU', 'Modbus TCP', 'RS485', 'Ethernet', 'MQTT', 'LoRa', 'NTP/SNTP', 'Telegram API'];
+
+const trustPoints = [
+  { icon: 'lucide:flag',           title: 'Made in Thailand',         desc: 'ออกแบบและผลิตในประเทศไทย ตรวจสอบคุณภาพทุกชิ้น' },
+  { icon: 'lucide:shield-check',   title: 'Industrial Grade',         desc: 'ทนสภาพโรงงาน -20°C ถึง 70°C รองรับสภาวะ EMI' },
+  { icon: 'lucide:headphones',     title: 'Thai Engineering Support', desc: 'ทีมวิศวกรไทยพร้อมสนับสนุนด้านเทคนิคและ Wiring' },
+  { icon: 'lucide:settings-2',     title: 'Customizable OEM',         desc: 'รับสั่งทำตามขนาด สี Protocol และ Firmware เฉพาะ' },
+  { icon: 'lucide:book-open',      title: 'Thai Manual & Tutorial',   desc: 'คู่มือภาษาไทย วิดีโอสอนใช้งาน และตัวอย่างจริง' },
+  { icon: 'lucide:trending-down',  title: 'SAVE BUDGET GET BETTER',   desc: 'ราคาเหมาะสม ประหยัดงบมากกว่าสินค้านำเข้าชั้นนำ' },
 ];
 ---
 
-<BaseLayout title="LEOS METER — เพาเวอร์มิเตอร์ จอแสดงผล นาฬิกา NTP อุตสาหกรรม" description="LEOS METER by SME INTER จำหน่ายเพาเวอร์มิเตอร์ จอแสดงผล LED นาฬิกา NTP และ Haiwell PLC/HMI สำหรับโรงงานอุตสาหกรรม ผลิตในไทย SAVE BUDGET GET BETTER">
+<BaseLayout
+  title="Industrial Meter, Modbus Gateway & IoT Monitoring Solutions — LEOS METER"
+  description="LEOS METER by SME INTER — อุปกรณ์วัดค่า แสดงผล และเชื่อมต่อข้อมูลสำหรับโรงงานอุตสาหกรรม Modbus RTU/TCP · MQTT · LoRa · Telegram · NTP · Made in Thailand"
+>
 
-  <!-- 1. Hero -->
-  <Hero />
+  <!-- ===== 1. HERO ===== -->
+  <section class="relative bg-navy overflow-hidden">
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-[0.07] pointer-events-none" aria-hidden="true">
+      <svg width="100%" height="100%"><defs><pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M 48 0 L 0 0 0 48" fill="none" stroke="white" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#grid)"/></svg>
+    </div>
+    <!-- Glow blobs -->
+    <div class="absolute -top-24 left-1/3 w-96 h-96 bg-brand/40 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-cyan/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
 
-  <!-- 2. Trust / Stats -->
-  <section class="bg-white border-b border-gray-100 py-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {stats.map(({ value, label, icon }) => (
-          <div class="flex flex-col items-center text-center gap-2">
-            <div class="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center">
-              <Icon name={icon} class="w-6 h-6 text-brand" aria-hidden="true" />
-            </div>
-            <p class="text-2xl font-extrabold text-navy">{value}</p>
-            <p class="text-sm text-gray-500">{label}</p>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+      <div class="max-w-3xl">
+        <!-- Eyebrow -->
+        <div class="flex items-center gap-2 mb-5">
+          <span class="h-px w-8 bg-cyan"></span>
+          <span class="text-cyan text-xs font-bold uppercase tracking-widest">SME INTER · Made in Thailand</span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-5">
+          Industrial Meter,<br />
+          <span class="text-cyan">Modbus Gateway</span><br />
+          & IoT Monitoring
+        </h1>
+        <p class="text-lg md:text-xl text-blue-200 mb-3 leading-relaxed">
+          อุปกรณ์วัดค่า แสดงผล และเชื่อมต่อข้อมูล<br class="hidden sm:block" />
+          สำหรับโรงงานอุตสาหกรรม
+        </p>
+
+        <!-- Protocol badges -->
+        <div class="flex flex-wrap gap-1.5 mb-8">
+          {protocolBadges.map((b) => (
+            <span class="text-xs font-semibold bg-white/10 text-blue-200 border border-white/20 px-2.5 py-1 rounded-full">
+              {b}
+            </span>
+          ))}
+        </div>
+
+        <!-- CTA buttons -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href="/products" class="inline-flex items-center justify-center gap-2 bg-brand text-white font-bold px-7 py-3.5 rounded-lg hover:bg-brand/90 transition-colors">
+            <Icon name="lucide:grid" class="w-5 h-5" aria-hidden="true" />
+            ดูสินค้าทั้งหมด
+          </a>
+          <a href="/downloads" class="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/30 text-white font-bold px-7 py-3.5 rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm">
+            <Icon name="lucide:download" class="w-5 h-5" aria-hidden="true" />
+            ดาวน์โหลดคู่มือ
+          </a>
+          <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-green-500 text-white font-bold px-7 py-3.5 rounded-lg hover:bg-green-400 transition-colors">
+            <Icon name="lucide:phone" class="w-5 h-5" aria-hidden="true" />
+            ติดต่อฝ่ายขาย
+          </a>
+        </div>
+      </div>
+
+      <!-- Stat badges (desktop) -->
+      <div class="absolute right-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-3">
+        {[
+          { value: '10+',       label: 'ปีประสบการณ์' },
+          { value: '100+',      label: 'รายการสินค้า' },
+          { value: 'Made in TH', label: 'ผลิตในไทย' },
+        ].map(({ value, label }) => (
+          <div class="bg-white/10 border border-white/20 backdrop-blur-sm rounded-xl px-5 py-3 text-center min-w-[130px]">
+            <p class="text-white font-extrabold text-xl">{value}</p>
+            <p class="text-blue-200 text-xs mt-0.5">{label}</p>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- 3. Featured Products -->
-  <section class="py-16 bg-gray-50">
+  <!-- ===== 2. PRODUCT CATEGORY GRID ===== -->
+  <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-end justify-between mb-8">
         <div>
-          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">สินค้าแนะนำ</p>
-          <h2 class="text-2xl md:text-3xl font-extrabold text-navy">สินค้าขายดี</h2>
+          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">Product Categories</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-navy">หมวดหมู่สินค้า</h2>
         </div>
-        <a href="/products" class="text-sm font-semibold text-brand hover:underline hidden sm:block">
-          ดูสินค้าทั้งหมด →
-        </a>
+        <a href="/products" class="text-sm font-semibold text-brand hover:underline hidden sm:block">ดูสินค้าทั้งหมด →</a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {categoryHighlights.map(({ slug, icon, label, desc }) => (
+          <a
+            href={`/category/${slug}`}
+            class="group bg-gray-50 border border-gray-200 rounded-xl p-4 hover:bg-white hover:shadow-md hover:border-brand/30 transition-all duration-200"
+          >
+            <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center mb-3 group-hover:bg-brand/20 transition-colors">
+              <Icon name={icon} class="w-5 h-5 text-brand" aria-hidden="true" />
+            </div>
+            <p class="font-bold text-navy text-sm leading-snug mb-1 group-hover:text-brand transition-colors">{label}</p>
+            <p class="text-xs text-gray-500 leading-relaxed">{desc}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3. FEATURED PRODUCTS ===== -->
+  <section class="py-16 bg-gray-50 border-y border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-end justify-between mb-8">
+        <div>
+          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">Popular Products</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-navy">สินค้าที่นิยม</h2>
+        </div>
+        <a href="/products" class="text-sm font-semibold text-brand hover:underline hidden sm:block">ดูทั้งหมด →</a>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {featured.map((product) => (
           <ProductCard product={product} />
         ))}
       </div>
-      <div class="mt-6 text-center sm:hidden">
-        <a href="/products" class="text-sm font-semibold text-brand hover:underline">
-          ดูสินค้าทั้งหมด →
-        </a>
-      </div>
     </div>
   </section>
 
-  <!-- 4. About / Made in Thailand -->
+  <!-- ===== 4. SOLUTIONS BY APPLICATION ===== -->
   <section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-2">เกี่ยวกับเรา</p>
-          <h2 class="text-2xl md:text-3xl font-extrabold text-navy mb-4">
-            SME INTER — ผลิตในไทย<br />
-            <span class="text-brand">เพื่ออุตสาหกรรมไทย</span>
-          </h2>
-          <p class="text-gray-600 leading-relaxed mb-4">
-            บริษัท SME INTER จำกัด ก่อตั้งมากกว่า 10 ปี มุ่งมั่นพัฒนาและผลิตอุปกรณ์วัดแสดงผล
-            สำหรับอุตสาหกรรมไทยโดยเฉพาะ ทั้งเพาเวอร์มิเตอร์, จอแสดงผล LED ขนาดใหญ่,
-            นาฬิกาซิงค์เวลา NTP และโซลูชัน IoT/SCADA
-          </p>
-          <p class="text-gray-600 leading-relaxed mb-6">
-            สินค้าทุกชิ้นออกแบบและผลิตในประเทศไทย รองรับสภาพแวดล้อมโรงงานจริง
-            มีทีมวิศวกรให้คำปรึกษาด้านเทคนิคและบริการหลังการขาย
-          </p>
-          <p class="text-xl font-extrabold text-brand tracking-wider">SAVE BUDGET GET BETTER</p>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          {[
-            { icon: 'lucide:shield-check', title: 'คุณภาพมาตรฐาน', desc: 'ผ่านการทดสอบตามมาตรฐานอุตสาหกรรม' },
-            { icon: 'lucide:wrench', title: 'บริการหลังขาย', desc: 'ทีมวิศวกรพร้อมสนับสนุน' },
-            { icon: 'lucide:flag', title: 'Made in Thailand', desc: 'ออกแบบและผลิตในไทย' },
-            { icon: 'lucide:trending-down', title: 'ราคาเหมาะสม', desc: 'ประหยัดงบ ได้คุณภาพดีกว่า' },
-          ].map(({ icon, title, desc }) => (
-            <div class="bg-gray-50 rounded-xl p-4">
-              <Icon name={icon} class="w-6 h-6 text-brand mb-2" aria-hidden="true" />
-              <p class="font-bold text-navy text-sm mb-1">{title}</p>
-              <p class="text-xs text-gray-500 leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. Solutions -->
-  <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-end justify-between mb-8">
         <div>
-          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">โซลูชัน</p>
-          <h2 class="text-2xl md:text-3xl font-extrabold text-navy">โซลูชันอุตสาหกรรม</h2>
+          <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">Solutions</p>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-navy">โซลูชันตามงานจริง</h2>
+          <p class="text-gray-500 text-sm mt-1">ไม่รู้จะเลือกสินค้าไหน? เลือกตามงานที่ต้องการ</p>
         </div>
-        <a href="/solutions" class="text-sm font-semibold text-brand hover:underline hidden sm:block">
-          ดูทั้งหมด →
-        </a>
+        <a href="/solutions" class="text-sm font-semibold text-brand hover:underline hidden sm:block">ดูทั้งหมด →</a>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {solutions.slice(0, 6).map((s) => (
-          <SolutionCard solution={s} />
+        {solutions.slice(0, 6).map((s) => <SolutionCard solution={s} />)}
+      </div>
+      <div class="mt-6 text-center">
+        <a href="/product-selector" class="inline-flex items-center gap-2 border-2 border-brand text-brand font-bold px-7 py-3 rounded-lg hover:bg-brand hover:text-white transition-colors">
+          <Icon name="lucide:sliders" class="w-5 h-5" aria-hidden="true" />
+          เลือกสินค้าให้เหมาะกับงานของคุณ
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. WHY CHOOSE LEOS ===== -->
+  <section class="py-16 bg-navy">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">Why LEOS METER</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-white">ทำไมต้องเลือก LEOS METER?</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {trustPoints.map(({ icon, title, desc }) => (
+          <div class="bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
+            <div class="w-10 h-10 bg-brand/20 rounded-lg flex items-center justify-center mb-3">
+              <Icon name={icon} class="w-5 h-5 text-cyan" aria-hidden="true" />
+            </div>
+            <h3 class="font-bold text-white text-sm mb-1">{title}</h3>
+            <p class="text-blue-200 text-xs leading-relaxed">{desc}</p>
+          </div>
         ))}
       </div>
     </div>
   </section>
 
-  <!-- 6. Tutorial & FAQ -->
+  <!-- ===== 6. DOWNLOAD / SUPPORT SHORTCUT ===== -->
+  <section class="py-12 bg-white border-y border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <a href="/downloads" class="group flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-brand/30 transition-all">
+          <div class="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-brand/20 transition-colors">
+            <Icon name="lucide:download" class="w-6 h-6 text-brand" aria-hidden="true" />
+          </div>
+          <div>
+            <p class="font-bold text-navy text-sm">Download Center</p>
+            <p class="text-xs text-gray-500 mt-0.5">Datasheet · คู่มือ · Firmware · Register Map</p>
+          </div>
+        </a>
+        <a href="/tutorial" class="group flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-brand/30 transition-all">
+          <div class="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-brand/20 transition-colors">
+            <Icon name="lucide:book-open" class="w-6 h-6 text-brand" aria-hidden="true" />
+          </div>
+          <div>
+            <p class="font-bold text-navy text-sm">Tutorial & Knowledge Base</p>
+            <p class="text-xs text-gray-500 mt-0.5">Modbus · MQTT · Wiring · Troubleshooting</p>
+          </div>
+        </a>
+        <a href="/product-selector" class="group flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-brand/30 transition-all">
+          <div class="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-brand/20 transition-colors">
+            <Icon name="lucide:sliders" class="w-6 h-6 text-brand" aria-hidden="true" />
+          </div>
+          <div>
+            <p class="font-bold text-navy text-sm">Product Selector</p>
+            <p class="text-xs text-gray-500 mt-0.5">ตอบคำถาม 3 ข้อ รู้ว่าต้องใช้รุ่นไหน</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. TUTORIALS PREVIEW ===== -->
   {tutorials.length > 0 && (
-    <section class="py-16 bg-white">
+    <section class="py-16 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-end justify-between mb-8">
           <div>
-            <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">ช่วยเหลือ</p>
+            <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">Technical Support</p>
             <h2 class="text-2xl md:text-3xl font-extrabold text-navy">บทความ & คู่มือ</h2>
           </div>
-          <a href="/tutorial" class="text-sm font-semibold text-brand hover:underline hidden sm:block">
-            ดูทั้งหมด →
-          </a>
+          <a href="/tutorial" class="text-sm font-semibold text-brand hover:underline hidden sm:block">ดูทั้งหมด →</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {tutorials.map((post) => (
-            <BlogCard post={post} />
-          ))}
+          {tutorials.map((post) => <BlogCard post={post} />)}
         </div>
       </div>
     </section>
   )}
 
-  <!-- 7. Contact CTA -->
-  <ContactCTA />
+  <!-- ===== 8. CONTACT CTA ===== -->
+  <section class="bg-brand py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-3">
+        สอบถามข้อมูลเพิ่มเติม / ขอใบเสนอราคา
+      </h2>
+      <p class="text-blue-100 text-lg mb-8 max-w-xl mx-auto">
+        ทีมวิศวกรพร้อมให้คำปรึกษาด้านเทคนิคและเสนอราคาโดยไม่มีค่าใช้จ่าย<br />
+        {site.hours}
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-white text-brand font-bold px-7 py-3.5 rounded-lg hover:bg-blue-50 transition-colors">
+          <Icon name="lucide:send" class="w-5 h-5" aria-hidden="true" />
+          ติดต่อเรา
+        </a>
+        <a href={site.line} target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 bg-green-500 text-white font-bold px-7 py-3.5 rounded-lg hover:bg-green-400 transition-colors">
+          <Icon name="lucide:message-circle" class="w-5 h-5" aria-hidden="true" />
+          LINE {site.lineId}
+        </a>
+        <a href={`tel:${site.phone[0].replace(/-/g, '')}`} class="inline-flex items-center justify-center gap-2 bg-white/20 border border-white/40 text-white font-bold px-7 py-3.5 rounded-lg hover:bg-white/30 transition-colors">
+          <Icon name="lucide:phone" class="w-5 h-5" aria-hidden="true" />
+          {site.phone[0]}
+        </a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

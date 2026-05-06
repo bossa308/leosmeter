@@ -1,0 +1,272 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { products } from '../data/products';
+import { site } from '../data/site';
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/products/*.{svg,png,jpg,webp}',
+  { eager: true }
+);
+
+const productJson = JSON.stringify(products.map((p) => ({
+  slug: p.slug,
+  model: p.model ?? '',
+  name: p.name,
+  shortDescription: p.shortDescription,
+  category: p.category,
+  protocols: p.protocols ?? [],
+  applications: p.applications ?? [],
+  inputTypes: p.inputTypes ?? [],
+  tags: p.tags,
+})));
+---
+
+<BaseLayout
+  title="Product Selector — เลือกสินค้าให้เหมาะกับงาน | LEOS METER"
+  description="ตอบ 3–5 คำถามง่ายๆ แล้วรับคำแนะนำสินค้า LEOS METER ที่เหมาะกับงานอุตสาหกรรมของคุณ"
+>
+  <section class="bg-navy text-white py-14">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+      <div class="w-14 h-14 bg-brand rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <Icon name="lucide:sliders" class="w-7 h-7 text-white" aria-hidden="true" />
+      </div>
+      <p class="text-cyan text-xs font-bold uppercase tracking-widest mb-2">Product Selector</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-3">เลือกสินค้าให้เหมาะกับงานของคุณ</h1>
+      <p class="text-blue-200">ตอบคำถาม 3–5 ข้อ ระบบจะแนะนำสินค้าที่เหมาะสม</p>
+    </div>
+  </section>
+
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+
+    <!-- Step 1 -->
+    <div id="step-1" class="step-block">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 bg-brand text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">1</div>
+        <h2 class="text-xl font-extrabold text-navy">ต้องการวัดหรือควบคุมอะไร?</h2>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[
+          { id:'power',       icon:'lucide:zap',        label:'วัดพลังงานไฟฟ้า',     sub:'V, A, W, kWh, PF' },
+          { id:'process',     icon:'lucide:gauge',       label:'วัดค่า Process',       sub:'4-20mA, Temp, Level' },
+          { id:'io',          icon:'lucide:cpu',         label:'ควบคุม Digital I/O',   sub:'DI, DO, AI, AO' },
+          { id:'display',     icon:'lucide:monitor',     label:'แสดงผลขนาดใหญ่',      sub:'LED Display, Andon' },
+          { id:'notify',      icon:'lucide:bell',        label:'แจ้งเตือนอัตโนมัติ',  sub:'Telegram, Line' },
+          { id:'time',        icon:'lucide:clock',       label:'ซิงค์เวลา NTP',       sub:'NTP Clock Server' },
+        ].map(({ id, icon, label, sub }) => (
+          <button
+            class="selector-btn group border-2 border-gray-200 rounded-xl p-4 text-left hover:border-brand hover:bg-brand/5 transition-all"
+            data-step="1"
+            data-value={id}
+          >
+            <Icon name={icon} class="w-6 h-6 text-gray-400 group-hover:text-brand mb-2 transition-colors" aria-hidden="true" />
+            <p class="font-bold text-gray-800 text-sm group-hover:text-brand transition-colors">{label}</p>
+            <p class="text-xs text-gray-400 mt-0.5">{sub}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="step-2" class="step-block hidden">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 bg-brand text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">2</div>
+        <h2 class="text-xl font-extrabold text-navy">ต้องการสื่อสารผ่านอะไร?</h2>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[
+          { id:'modbus-rtu',  label:'Modbus RTU',     sub:'RS-485, สายสัญญาณ' },
+          { id:'modbus-tcp',  label:'Modbus TCP',     sub:'Ethernet, LAN, SCADA' },
+          { id:'mqtt',        label:'MQTT / IoT',     sub:'Cloud, Node-RED, Dashboard' },
+          { id:'lora',        label:'LoRa Wireless',  sub:'ไม่ต้องเดินสาย, 2 กม.' },
+          { id:'ntp',         label:'NTP/SNTP',       sub:'ซิงค์เวลาผ่าน LAN' },
+          { id:'standalone',  label:'Standalone',     sub:'ไม่ต้องต่อสื่อสาร' },
+        ].map(({ id, label, sub }) => (
+          <button
+            class="selector-btn border-2 border-gray-200 rounded-xl p-4 text-left hover:border-brand hover:bg-brand/5 transition-all"
+            data-step="2"
+            data-value={id}
+          >
+            <p class="font-bold text-gray-800 text-sm mb-0.5">{label}</p>
+            <p class="text-xs text-gray-400">{sub}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="step-3" class="step-block hidden">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-8 h-8 bg-brand text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">3</div>
+        <h2 class="text-xl font-extrabold text-navy">งานนี้ติดตั้งในสถานที่ใด?</h2>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[
+          { id:'panel',       label:'แผงไฟฟ้า Panel',    sub:'Panel Mount, MCC' },
+          { id:'factory',     label:'พื้นโรงงาน',         sub:'DIN Rail, Wall Mount' },
+          { id:'outdoor',     label:'นอกอาคาร / ไร้สาย', sub:'LoRa, ไม่มี LAN' },
+          { id:'production',  label:'สายการผลิต',         sub:'Andon, Display Board' },
+          { id:'control',     label:'ห้องควบคุม',         sub:'SCADA, HMI, NTP Clock' },
+        ].map(({ id, label, sub }) => (
+          <button
+            class="selector-btn border-2 border-gray-200 rounded-xl p-4 text-left hover:border-brand hover:bg-brand/5 transition-all"
+            data-step="3"
+            data-value={id}
+          >
+            <p class="font-bold text-gray-800 text-sm mb-0.5">{label}</p>
+            <p class="text-xs text-gray-400">{sub}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="hidden">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-extrabold text-navy">สินค้าที่แนะนำสำหรับคุณ</h2>
+        <button id="restart-btn" class="text-sm text-brand hover:underline flex items-center gap-1">
+          <Icon name="lucide:rotate-ccw" class="w-4 h-4" aria-hidden="true" />เริ่มใหม่
+        </button>
+      </div>
+      <div id="result-grid" class="grid sm:grid-cols-2 gap-4 mb-8"></div>
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 text-center">
+        <p class="text-sm text-gray-600 mb-3">ไม่แน่ใจ หรือต้องการคำแนะนำเพิ่มเติม?</p>
+        <div class="flex flex-col sm:flex-row gap-2 justify-center">
+          <a href={site.line} target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 bg-green-500 text-white font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-green-400 transition-colors">
+            ถามทีมงานผ่าน LINE
+          </a>
+          <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-brand text-white font-bold text-sm px-5 py-2.5 rounded-lg hover:bg-brand/90 transition-colors">
+            <Icon name="lucide:send" class="w-4 h-4" aria-hidden="true" />ส่งโจทย์งาน
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress indicator -->
+    <div id="progress-bar" class="hidden mt-8 flex items-center gap-3">
+      <button id="back-btn" class="text-sm text-gray-500 hover:text-brand flex items-center gap-1">
+        <Icon name="lucide:arrow-left" class="w-4 h-4" aria-hidden="true" />ย้อนกลับ
+      </button>
+      <div class="flex gap-1.5 mx-auto">
+        <div id="dot-1" class="w-2.5 h-2.5 rounded-full bg-brand"></div>
+        <div id="dot-2" class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+        <div id="dot-3" class="w-2.5 h-2.5 rounded-full bg-gray-200"></div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script define:vars={{ productJson }}>
+  const allProducts = JSON.parse(productJson);
+  const steps = [null, 'step-1', 'step-2', 'step-3'];
+  const dots = [null, 'dot-1', 'dot-2', 'dot-3'];
+  let currentStep = 1;
+  const answers = {};
+
+  const progressBar = document.getElementById('progress-bar');
+  const backBtn = document.getElementById('back-btn');
+  const restartBtn = document.getElementById('restart-btn');
+  const resultGrid = document.getElementById('result-grid');
+
+  function showStep(n) {
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById(steps[i]).classList.toggle('hidden', i !== n);
+      const dot = document.getElementById(dots[i]);
+      dot.classList.toggle('bg-brand', i <= n);
+      dot.classList.toggle('bg-gray-200', i > n);
+    }
+    document.getElementById('results').classList.add('hidden');
+    progressBar.classList.toggle('hidden', n === 1);
+    currentStep = n;
+  }
+
+  function showResults() {
+    for (let i = 1; i <= 3; i++) document.getElementById(steps[i]).classList.add('hidden');
+    document.getElementById('results').classList.remove('hidden');
+    progressBar.classList.remove('hidden');
+
+    // Score each product
+    const scored = allProducts.map((p) => {
+      let score = 0;
+      const a1 = answers[1] ?? '';
+      const a2 = answers[2] ?? '';
+
+      // Step 1: what to measure/control
+      const measureMap = {
+        power:    ['ac-meter', 'ip-power', 'power-meter'],
+        process:  ['process-meter', 'process'],
+        io:       ['ethernet-io', 'iot-mqtt', 'lora'],
+        display:  ['big-display'],
+        notify:   ['notify-telegram'],
+        time:     ['ntp-clock'],
+      };
+      const cats = measureMap[a1] ?? [];
+      if (cats.some((c) => p.category.includes(c) || p.applications.some((ap) => ap.toLowerCase().includes(c)))) score += 3;
+
+      // Step 2: protocol
+      const protoMap = {
+        'modbus-rtu': ['Modbus RTU', 'RS485'],
+        'modbus-tcp': ['Modbus TCP', 'Ethernet'],
+        'mqtt':       ['MQTT'],
+        'lora':       ['LoRa'],
+        'ntp':        ['NTP', 'SNTP'],
+        'standalone': [],
+      };
+      const wantProtos = protoMap[a2] ?? [];
+      if (wantProtos.some((wp) => p.protocols.some((pp) => pp.toLowerCase().includes(wp.toLowerCase())))) score += 2;
+
+      return { ...p, score };
+    });
+
+    const top = scored.filter((p) => p.score > 0).sort((a, b) => b.score - a.score).slice(0, 4);
+    const show = top.length > 0 ? top : allProducts.slice(0, 4);
+
+    resultGrid.innerHTML = show.map((p) => `
+      <a href="/products/${p.slug}" class="group bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-brand/30 transition-all flex gap-3">
+        <div class="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 text-gray-200 text-2xl font-bold">
+          ${p.model ? `<span class="text-xs font-mono text-gray-400">${p.model}</span>` : p.name.charAt(0)}
+        </div>
+        <div>
+          ${p.model ? `<p class="text-xs font-mono text-gray-400">${p.model}</p>` : ''}
+          <p class="font-bold text-gray-800 text-sm leading-snug group-hover:text-brand transition-colors">${p.name}</p>
+          <p class="text-xs text-gray-500 mt-1 leading-relaxed">${p.shortDescription.slice(0, 80)}${p.shortDescription.length > 80 ? '…' : ''}</p>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  document.querySelectorAll('.selector-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const step = parseInt(btn.dataset.step);
+      const value = btn.dataset.value;
+      answers[step] = value;
+
+      // Highlight selected
+      document.querySelectorAll(`.selector-btn[data-step="${step}"]`).forEach((b) => {
+        b.classList.remove('border-brand', 'bg-brand/10');
+      });
+      btn.classList.add('border-brand', 'bg-brand/10');
+
+      setTimeout(() => {
+        if (step < 3) showStep(step + 1);
+        else showResults();
+      }, 250);
+    });
+  });
+
+  backBtn.addEventListener('click', () => {
+    if (document.getElementById('results').classList.contains('hidden')) {
+      if (currentStep > 1) showStep(currentStep - 1);
+    } else {
+      showStep(3);
+    }
+  });
+
+  restartBtn.addEventListener('click', () => {
+    Object.keys(answers).forEach((k) => delete answers[k]);
+    document.querySelectorAll('.selector-btn').forEach((b) => {
+      b.classList.remove('border-brand', 'bg-brand/10');
+    });
+    showStep(1);
+  });
+</script>

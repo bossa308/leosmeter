@@ -1,55 +1,79 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import { products } from '../../data/products';
+import { Icon } from 'astro-icon/components';
+import { products, getAllProtocols, getAllApplications } from '../../data/products';
 
-const categories = [...new Set(products.map((p) => p.category))];
+const protocols    = getAllProtocols();
+const applications = getAllApplications();
+const categories   = [...new Set(products.map((p) => p.category))];
 ---
 
 <BaseLayout
-  title="สินค้าทั้งหมด — LEOS METER"
-  description="รายการสินค้าอุปกรณ์วัดแสดงผลอุตสาหกรรม เพาเวอร์มิเตอร์ จอแสดงผล นาฬิกา NTP IoT Gateway Haiwell PLC/HMI จาก LEOS METER"
+  title="สินค้าทั้งหมด — Industrial Meter, Modbus Gateway & IoT | LEOS METER"
+  description="รายการสินค้าอุปกรณ์วัดแสดงผลอุตสาหกรรม เพาเวอร์มิเตอร์ Modbus Gateway IoT MQTT LoRa NTP Clock Big Display จาก LEOS METER"
 >
   <!-- Page header -->
-  <section class="bg-gray-50 border-b border-gray-200 py-12 px-4">
-    <div class="max-w-7xl mx-auto">
-      <p class="text-brand font-semibold text-xs uppercase tracking-widest mb-2">Products</p>
+  <section class="bg-gray-50 border-b border-gray-200 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex items-center gap-1.5 text-xs text-gray-500 mb-4" aria-label="breadcrumb">
+        <a href="/" class="hover:text-brand transition-colors">หน้าแรก</a>
+        <span class="text-gray-300">/</span>
+        <span class="text-gray-800 font-medium">สินค้า</span>
+      </nav>
+      <p class="text-xs font-bold text-brand uppercase tracking-widest mb-2">Products</p>
       <h1 class="text-3xl md:text-4xl font-extrabold text-navy">สินค้าทั้งหมด</h1>
-      <p class="text-gray-500 mt-2 text-sm">{products.length} รายการ</p>
+      <p class="text-gray-500 mt-2 text-sm">{products.length} รายการ · Industrial Meter · Modbus Gateway · IoT · Display · NTP</p>
     </div>
   </section>
 
-  <!-- Search + Filter bar -->
+  <!-- Sticky filter bar -->
   <div class="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row gap-3">
-      <!-- Search input -->
-      <div class="relative flex-1 max-w-sm">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input
-          id="search-input"
-          type="search"
-          placeholder="ค้นหาสินค้า..."
-          class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
-          autocomplete="off"
-        />
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-3">
+
+      <!-- Row 1: Search + dropdowns -->
+      <div class="flex flex-col sm:flex-row gap-2">
+        <!-- Search -->
+        <div class="relative flex-1 max-w-sm">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="ค้นหา Model, ชื่อสินค้า, Tag..."
+            class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Protocol dropdown -->
+        <select id="filter-protocol" class="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand/30 sm:max-w-[180px]">
+          <option value="">Protocol ทั้งหมด</option>
+          {protocols.map((p) => <option value={p}>{p}</option>)}
+        </select>
+
+        <!-- Application dropdown -->
+        <select id="filter-app" class="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand/30 sm:max-w-[200px]">
+          <option value="">Application ทั้งหมด</option>
+          {applications.map((a) => <option value={a}>{a}</option>)}
+        </select>
+
+        <!-- Clear -->
+        <button id="filter-clear" class="hidden text-sm text-gray-500 hover:text-brand px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap border border-gray-200">
+          <Icon name="lucide:x" class="w-4 h-4 inline" aria-hidden="true" />
+          ล้างตัวกรอง
+        </button>
       </div>
 
-      <!-- Category filter pills -->
-      <nav id="cat-filter" class="flex gap-1.5 overflow-x-auto scrollbar-none flex-wrap" aria-label="กรองหมวดหมู่">
-        <button
-          data-cat="all"
-          class="cat-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-brand bg-brand text-white whitespace-nowrap shrink-0 transition-colors"
-        >
+      <!-- Row 2: Category pills -->
+      <nav id="cat-filter" class="flex gap-1.5 overflow-x-auto scrollbar-none" aria-label="กรองหมวดหมู่">
+        <button data-cat="all" class="cat-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-brand bg-brand text-white whitespace-nowrap shrink-0 transition-colors">
           ทั้งหมด
         </button>
         {categories.map((cat) => (
-          <button
-            data-cat={cat}
-            class="cat-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:border-brand hover:text-brand whitespace-nowrap shrink-0 transition-colors"
-          >
-            {cat}
+          <button data-cat={cat} class="cat-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:border-brand hover:text-brand whitespace-nowrap shrink-0 transition-colors">
+            {cat.replace(/-/g, ' ')}
           </button>
         ))}
       </nav>
@@ -58,14 +82,18 @@ const categories = [...new Set(products.map((p) => p.category))];
 
   <!-- Product grid -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    <p id="result-count" class="text-sm text-gray-500 mb-5">{products.length} รายการ</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="product-grid">
       {products.map((product) => (
         <div
           class="product-item"
           data-name={product.name.toLowerCase()}
+          data-model={(product.model ?? '').toLowerCase()}
           data-desc={product.shortDescription.toLowerCase()}
           data-tags={product.tags.join(' ').toLowerCase()}
           data-cat={product.category}
+          data-protocols={(product.protocols ?? []).join('|').toLowerCase()}
+          data-apps={(product.applications ?? []).join('|').toLowerCase()}
         >
           <ProductCard product={product} />
         </div>
@@ -73,49 +101,104 @@ const categories = [...new Set(products.map((p) => p.category))];
     </div>
 
     <!-- Empty state -->
-    <p id="no-results" class="hidden text-center text-gray-400 py-16 text-sm">
-      ไม่พบสินค้าที่ค้นหา
-    </p>
+    <div id="no-results" class="hidden text-center py-20">
+      <Icon name="lucide:search-x" class="w-12 h-12 text-gray-200 mx-auto mb-3" aria-hidden="true" />
+      <p class="text-gray-500 text-sm">ไม่พบสินค้าที่ตรงกับตัวกรอง</p>
+      <button onclick="document.getElementById('filter-clear').click()" class="mt-3 text-sm text-brand hover:underline">ล้างตัวกรองทั้งหมด</button>
+    </div>
   </div>
+
+  <!-- Product Selector CTA -->
+  <section class="bg-gray-50 border-t border-gray-200 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xs font-bold text-brand uppercase tracking-widest mb-2">Need Help Choosing?</p>
+      <h2 class="text-xl font-extrabold text-navy mb-3">ไม่แน่ใจว่าต้องใช้สินค้าอะไร?</h2>
+      <p class="text-gray-500 text-sm mb-5">ตอบ 3 คำถาม แล้วระบบจะแนะนำสินค้าที่เหมาะกับงานของคุณ</p>
+      <a href="/product-selector" class="inline-flex items-center gap-2 bg-brand text-white font-bold px-7 py-3.5 rounded-lg hover:bg-brand/90 transition-colors">
+        <Icon name="lucide:sliders" class="w-5 h-5" aria-hidden="true" />
+        เลือกสินค้าให้เหมาะกับงานของคุณ
+      </a>
+    </div>
+  </section>
 </BaseLayout>
 
 <script>
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const catBtns = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
-  const items = document.querySelectorAll<HTMLElement>('.product-item');
-  const noResults = document.getElementById('no-results')!;
+  const searchInput    = document.getElementById('search-input')    as HTMLInputElement;
+  const protocolSelect = document.getElementById('filter-protocol') as HTMLSelectElement;
+  const appSelect      = document.getElementById('filter-app')      as HTMLSelectElement;
+  const clearBtn       = document.getElementById('filter-clear')!;
+  const catBtns        = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
+  const items          = document.querySelectorAll<HTMLElement>('.product-item');
+  const noResults      = document.getElementById('no-results')!;
+  const countEl        = document.getElementById('result-count')!;
 
   let activeCat = 'all';
-  let searchQ = '';
+
+  function getFilters() {
+    return {
+      q:        searchInput.value.toLowerCase().trim(),
+      protocol: protocolSelect.value.toLowerCase(),
+      app:      appSelect.value.toLowerCase(),
+    };
+  }
+
+  function hasActiveFilter() {
+    const f = getFilters();
+    return f.q !== '' || f.protocol !== '' || f.app !== '' || activeCat !== 'all';
+  }
 
   function filter() {
+    const { q, protocol, app } = getFilters();
     let visible = 0;
+
     items.forEach((item) => {
-      const matchCat = activeCat === 'all' || item.dataset.cat === activeCat;
-      const haystack = `${item.dataset.name} ${item.dataset.desc} ${item.dataset.tags}`;
-      const matchSearch = searchQ === '' || haystack.includes(searchQ);
-      const show = matchCat && matchSearch;
+      const matchCat      = activeCat === 'all' || item.dataset.cat === activeCat;
+      const haystack      = `${item.dataset.name} ${item.dataset.model} ${item.dataset.desc} ${item.dataset.tags}`;
+      const matchSearch   = q       === '' || haystack.includes(q);
+      const matchProtocol = protocol === '' || (item.dataset.protocols ?? '').includes(protocol);
+      const matchApp      = app      === '' || (item.dataset.apps ?? '').includes(app);
+
+      const show = matchCat && matchSearch && matchProtocol && matchApp;
       item.style.display = show ? '' : 'none';
       if (show) visible++;
     });
+
     noResults.classList.toggle('hidden', visible > 0);
+    countEl.textContent = `${visible} รายการ`;
+    clearBtn.classList.toggle('hidden', !hasActiveFilter());
   }
 
-  searchInput.addEventListener('input', () => {
-    searchQ = searchInput.value.toLowerCase().trim();
+  function clearFilters() {
+    searchInput.value  = '';
+    protocolSelect.value = '';
+    appSelect.value    = '';
+    activeCat = 'all';
+    catBtns.forEach((b) => {
+      const isAll = b.dataset.cat === 'all';
+      b.classList.toggle('bg-brand',       isAll);
+      b.classList.toggle('text-white',     isAll);
+      b.classList.toggle('border-brand',   isAll);
+      b.classList.toggle('text-gray-600',  !isAll);
+      b.classList.toggle('border-gray-200',!isAll);
+    });
     filter();
-  });
+  }
+
+  searchInput.addEventListener('input', filter);
+  protocolSelect.addEventListener('change', filter);
+  appSelect.addEventListener('change', filter);
+  clearBtn.addEventListener('click', clearFilters);
 
   catBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       activeCat = btn.dataset.cat ?? 'all';
       catBtns.forEach((b) => {
         const isActive = b.dataset.cat === activeCat;
-        b.classList.toggle('bg-brand', isActive);
-        b.classList.toggle('text-white', isActive);
-        b.classList.toggle('border-brand', isActive);
-        b.classList.toggle('text-gray-600', !isActive);
-        b.classList.toggle('border-gray-200', !isActive);
+        b.classList.toggle('bg-brand',       isActive);
+        b.classList.toggle('text-white',     isActive);
+        b.classList.toggle('border-brand',   isActive);
+        b.classList.toggle('text-gray-600',  !isActive);
+        b.classList.toggle('border-gray-200',!isActive);
       });
       filter();
     });
