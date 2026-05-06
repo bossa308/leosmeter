@@ -243,6 +243,9 @@ const docTypeIcon: Record<string, string> = {
         <a href="#overview"        class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Overview</a>
         <a href="#features"        class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Features</a>
         <a href="#specifications"  class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Specifications</a>
+        {product.variants && product.variants.length > 0 && (
+          <a href="#models"        class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Models</a>
+        )}
         {productDownloads.length > 0 && (
           <a href="#downloads"     class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Downloads</a>
         )}
@@ -295,6 +298,33 @@ const docTypeIcon: Record<string, string> = {
                 ))}
               </tbody>
             </table>
+          </div>
+        </section>
+      )}
+
+      <!-- ── Models / Variants / SKUs ── -->
+      {product.variants && product.variants.length > 0 && (
+        <section id="models" class="py-12 border-b border-gray-200 scroll-mt-32">
+          <div class="flex items-end justify-between gap-4 mb-2">
+            <h2 class="text-xl font-extrabold text-navy">Models / รหัสสินค้า</h2>
+            <span class="text-xs text-gray-400">{product.variants.length} รุ่นย่อย</span>
+          </div>
+          <p class="text-sm text-gray-500 mb-6 max-w-3xl">
+            ตระกูล {product.model ?? product.name} มีรุ่นย่อยตาม Option (RS-485 / Analog Output / แรงดันไฟเลี้ยง / CT) ดังนี้ — ติดต่อทีมขายเพื่อยืนยันรหัสที่เหมาะกับงานของคุณ
+          </p>
+          <div class="bg-white border border-gray-200 rounded-xl overflow-hidden max-w-4xl">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 divide-gray-100">
+              {product.variants.map((code) => (
+                <a
+                  href={`/contact?subject=${encodeURIComponent('สอบถามรุ่น ' + code)}`}
+                  class="group flex items-center justify-between gap-2 px-4 py-3 sm:border-r sm:border-b sm:border-gray-100 hover:bg-brand/5 transition-colors"
+                  title={`ขอใบเสนอราคา ${code}`}
+                >
+                  <span class="font-mono text-xs font-semibold text-gray-800 group-hover:text-brand truncate">{code}</span>
+                  <Icon name="lucide:chevron-right" class="w-3.5 h-3.5 text-gray-300 group-hover:text-brand shrink-0" aria-hidden="true" />
+                </a>
+              ))}
+            </div>
           </div>
         </section>
       )}
