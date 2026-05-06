@@ -2,9 +2,16 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { downloads, docTypeLabel, docTypeColor } from '../data/downloads';
+import { downloadFileExists } from '../lib/downloads-fs';
 
 const docTypes = [...new Set(downloads.map((d) => d.docType))];
 const categories = [...new Set(downloads.map((d) => d.category))];
+
+const downloadsWithStatus = downloads.map((d) => ({
+  ...d,
+  available: downloadFileExists(d.filename),
+}));
+const availableCount = downloadsWithStatus.filter((d) => d.available).length;
 
 const categoryLabel: Record<string, string> = {
   'ac-meter':       'AC Meter',
@@ -77,6 +84,15 @@ const categoryLabel: Record<string, string> = {
     <!-- Stats row -->
     <p id="dl-count" class="text-sm text-gray-500 mb-4">{downloads.length} รายการ</p>
 
+    {availableCount < downloads.length && (
+      <div class="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800 flex items-start gap-2">
+        <Icon name="lucide:info" class="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
+        <span>
+          เอกสารบางรายการยังไม่ได้อัปโหลด — กดปุ่ม <span class="font-semibold">ขอเอกสาร</span> เพื่อให้ทีมงานส่งให้ภายใน 1 วันทำการ
+        </span>
+      </div>
+    )}
+
     <!-- Downloads table -->
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
       <div class="overflow-x-auto">
@@ -93,7 +109,7 @@ const categoryLabel: Record<string, string> = {
             </tr>
           </thead>
           <tbody id="dl-body">
-            {downloads.map((dl) => (
+            {downloadsWithStatus.map((dl) => (
               <tr
                 class="dl-row border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors"
                 data-search={`${dl.model} ${dl.productName} ${dl.label}`.toLowerCase()}
@@ -118,14 +134,26 @@ const categoryLabel: Record<string, string> = {
                   {new Date(dl.updatedAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short' })}
                 </td>
                 <td class="px-5 py-3.5">
-                  <a
-                    href={`/downloads/${dl.filename}`}
-                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand border border-brand/30 hover:bg-brand hover:text-white px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
-                    title={`Download ${dl.label}`}
-                  >
-                    <Icon name="lucide:download" class="w-3.5 h-3.5" aria-hidden="true" />
-                    Download
-                  </a>
+                  {dl.available ? (
+                    <a
+                      href={`/downloads/${dl.filename}`}
+                      class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand border border-brand/30 hover:bg-brand hover:text-white px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                      title={`Download ${dl.label}`}
+                      download
+                    >
+                      <Icon name="lucide:download" class="w-3.5 h-3.5" aria-hidden="true" />
+                      Download
+                    </a>
+                  ) : (
+                    <a
+                      href={`/contact?subject=${encodeURIComponent('ขอเอกสาร ' + dl.label + ' (' + dl.model + ')')}`}
+                      class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 border border-gray-200 hover:border-brand hover:text-brand px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                      title="ขอเอกสารจากทีมงาน"
+                    >
+                      <Icon name="lucide:mail" class="w-3.5 h-3.5" aria-hidden="true" />
+                      ขอเอกสาร
+                    </a>
+                  )}
                 </td>
               </tr>
             ))}
