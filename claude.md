@@ -20,8 +20,8 @@ The primary content language is **Thai**. English may appear in technical produc
   - **Tutorials / FAQs / firmware notes:** Astro Content Collections (MDX in `src/content/tutorial/`).
 - **Icons:** `astro-icon` with the `lucide` icon set
 - **Forms:** Web3Forms (no backend required) — access key goes in `.env` as `PUBLIC_WEB3FORMS_KEY`
-- **Hosting:** Cloudflare Pages (build command `npm run build`, output dir `dist`)
-- **Node:** v20 LTS (set in `.nvmrc` and `package.json` `engines`)
+- **Hosting:** Cloudflare Workers + Static Assets (the modern unified Pages flow). Configured by [`wrangler.jsonc`](wrangler.jsonc); `@astrojs/cloudflare` adapter is used to emit a tiny `_worker.js` alongside the prerendered `dist/`. Deploy with `npm run deploy` locally, or push to GitHub and Cloudflare's Workers Builds picks it up.
+- **Node:** v22 LTS (set in `.nvmrc` and `package.json` `engines`). Required by `wrangler@4`.
 - **Package manager:** npm (do not introduce yarn/pnpm/bun unless asked)
 
 ## Important Constraints
@@ -88,15 +88,18 @@ npm run preview
 npm run astro -- check
 ```
 
-## Deployment (Cloudflare Pages)
+## Deployment (Cloudflare Workers + Static Assets)
 
-1. Push to GitHub.
-2. Cloudflare dashboard → Pages → Connect to Git → pick the repo.
-3. Framework preset: **Astro**. Build command: `npm run build`. Output: `dist`. Env var: `NODE_VERSION=20`.
-4. Add `PUBLIC_WEB3FORMS_KEY` in Pages project settings (Production + Preview).
-5. Site lives at `<project>.pages.dev` until a custom domain is added.
+The repo is wired up by Cloudflare's automatic Astro detection:
+- [`wrangler.jsonc`](wrangler.jsonc) — Workers config; `assets.directory: "dist"` serves the prerendered output.
+- [`astro.config.mjs`](astro.config.mjs) — keeps `output: "static"` but adds the `@astrojs/cloudflare` adapter so the build produces `dist/_worker.js` for the Workers runtime.
+- [`public/.assetsignore`](public/.assetsignore) — tells Workers which paths to skip from static assets.
 
-When the domain is purchased: add it as a custom domain in Cloudflare Pages, update `site` in `astro.config.mjs`, then update absolute URLs in `robots.txt` and the sitemap.
+CI deploy (auto): every push to `master` triggers Cloudflare's Workers Builds → `npm run build` → `wrangler deploy`. **Cloudflare must be set to Node 22+** (`.nvmrc` and `package.json#engines` already pin this; if a deploy still picks Node 20, set `NODE_VERSION=22` in the Workers project's environment variables).
+
+Add `PUBLIC_WEB3FORMS_KEY` in the Cloudflare Workers project's environment variables (Production + Preview).
+
+Site lives at `<project>.<account>.workers.dev` (or `<project>.pages.dev` if attached). When a custom domain is purchased: add it under Workers → Domains, update `site` in `astro.config.mjs`, then update absolute URLs in `robots.txt` and the sitemap.
 
 ## Conventions
 
@@ -111,8 +114,9 @@ When the domain is purchased: add it as a custom domain in Cloudflare Pages, upd
 ## What NOT to do
 
 - No database. Site is fully static.
-- No SSR. Keep `output: 'static'`.
+- No SSR routes. Keep `output: 'static'` — the `@astrojs/cloudflare` adapter is only there to package static output for Workers; do not add server endpoints.
 - No heavy UI libraries (MUI, Chakra, full shadcn install).
 - Do not commit `.env`. Only `.env.example`.
 - Do not hardcode the production domain.
 - Do not use Google Fonts via CDN `<link>` — self-host with `@fontsource-variable/*`.
+- Do not downgrade Node below 22 — `wrangler@4` will refuse to run.

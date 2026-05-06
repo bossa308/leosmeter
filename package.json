@@ -2,7 +2,7 @@
   "name": "leosmeter",
   "version": "0.0.1",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "type": "module",
   "scripts": {
