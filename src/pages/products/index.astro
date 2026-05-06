@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
+import ProductCard from '../../components/ProductCard.astro';
 import {
   products,
   getAllProtocols,
@@ -271,8 +272,8 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
             const appStr   = (product.applications ?? []).join('|');
             const tagStr   = product.tags.join('|');
             return (
-              <article
-                class="product-item bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md hover:border-brand/30 transition-all"
+              <div
+                class="product-item"
                 data-name={product.name.toLowerCase()}
                 data-model={(product.model ?? '').toLowerCase()}
                 data-desc={product.shortDescription.toLowerCase()}
@@ -283,54 +284,60 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
                 data-application={appStr}
                 data-featured={product.featured ? '1' : '0'}
               >
-                <a href={`/products/${product.slug}`} class="product-image-link block bg-gray-50 flex items-center justify-center">
-                  {imgSrc ? (
-                    <img
-                      src={imgSrc.src}
-                      alt={product.name}
-                      width={600}
-                      height={450}
-                      loading="lazy"
-                      decoding="async"
-                      class="product-image w-full h-full object-contain"
-                    />
-                  ) : (
-                    <span class="text-gray-300 text-4xl font-bold">{product.name.charAt(0)}</span>
-                  )}
-                </a>
-                <div class="product-body p-4 flex flex-col flex-1 min-w-0">
-                  <div class="flex items-center gap-1.5 mb-2 flex-wrap">
-                    <span class={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${brand === 'Haiwell' ? 'bg-orange-100 text-orange-700' : 'bg-brand/10 text-brand'}`}>
-                      {brand}
-                    </span>
-                    <span class="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                      {product.category.replace(/-/g, ' ')}
-                    </span>
-                    {product.model && (
-                      <span class="text-[10px] font-mono text-gray-400 hidden lg:inline">
-                        {product.model}
-                      </span>
-                    )}
-                  </div>
-                  <h3 class="font-bold text-gray-900 text-base leading-snug mb-1 product-title">{product.name}</h3>
-                  <p class="text-sm text-gray-500 leading-relaxed flex-1 product-desc">{product.shortDescription}</p>
-
-                  <!-- List-mode-only meta row -->
-                  <div class="product-meta hidden mt-3 flex flex-wrap gap-1.5">
-                    {(product.protocols ?? []).slice(0, 4).map((p) => (
-                      <span class="text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-full">{p}</span>
-                    ))}
-                  </div>
-
-                  <a
-                    href={`/products/${product.slug}`}
-                    class="mt-3 text-sm text-brand font-semibold hover:underline inline-flex items-center gap-1 self-start"
-                  >
-                    ดูรายละเอียด
-                    <span aria-hidden="true">→</span>
-                  </a>
+                <!-- Grid-mode card with HMS-style hover slide-up -->
+                <div class="product-grid">
+                  <ProductCard product={product} />
                 </div>
-              </article>
+
+                <!-- List-mode row -->
+                <article class="product-list bg-white border border-gray-200 rounded-xl hover:shadow-md hover:border-brand/30 transition-all overflow-hidden flex flex-row">
+                  <a href={`/products/${product.slug}`} class="bg-gray-50 flex items-center justify-center w-40 sm:w-48 shrink-0 aspect-square">
+                    {imgSrc ? (
+                      <img
+                        src={imgSrc.src}
+                        alt={product.name}
+                        width={400}
+                        height={400}
+                        loading="lazy"
+                        decoding="async"
+                        class="w-full h-full object-contain p-3"
+                      />
+                    ) : (
+                      <span class="text-gray-300 text-3xl font-bold">{product.name.charAt(0)}</span>
+                    )}
+                  </a>
+                  <div class="p-4 sm:p-5 flex flex-col flex-1 min-w-0">
+                    <div class="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                      <span class:list={[
+                        'text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full',
+                        brand === 'Haiwell' ? 'bg-orange-100 text-orange-700' : 'bg-brand/10 text-brand',
+                      ]}>{brand}</span>
+                      <span class="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        {product.category.replace(/-/g, ' ')}
+                      </span>
+                      {product.model && (
+                        <span class="text-[10px] font-mono text-gray-400">{product.model}</span>
+                      )}
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base leading-snug mb-1">
+                      <a href={`/products/${product.slug}`} class="hover:text-brand transition-colors">{product.name}</a>
+                    </h3>
+                    <p class="text-sm text-gray-500 leading-relaxed flex-1 line-clamp-2 sm:line-clamp-3">{product.shortDescription}</p>
+                    <div class="mt-2.5 flex flex-wrap gap-1.5">
+                      {(product.protocols ?? []).slice(0, 5).map((p) => (
+                        <span class="text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-full">{p}</span>
+                      ))}
+                    </div>
+                    <a
+                      href={`/products/${product.slug}`}
+                      class="mt-3 text-sm text-brand font-semibold hover:underline inline-flex items-center gap-1 self-start"
+                    >
+                      ดูรายละเอียด
+                      <span aria-hidden="true">→</span>
+                    </a>
+                  </div>
+                </article>
+              </div>
             );
           })}
         </div>
@@ -384,7 +391,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 </BaseLayout>
 
 <style>
-  /* Grid view (default) */
+  /* GRID VIEW (default) — uses ProductCard with HMS-style hover slide-up */
   .products-container[data-view="grid"] {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -393,39 +400,18 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   @media (min-width: 640px) {
     .products-container[data-view="grid"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (min-width: 1024px) {
-    .products-container[data-view="grid"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
   @media (min-width: 1280px) {
     .products-container[data-view="grid"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
-  .products-container[data-view="grid"] .product-image-link { aspect-ratio: 4 / 3; }
-  .products-container[data-view="grid"] .product-image       { padding: 1rem; }
-  .products-container[data-view="grid"] .product-item        { display: flex; flex-direction: column; }
+  .products-container[data-view="grid"] .product-list { display: none; }
 
-  /* List view */
+  /* LIST VIEW — wide rows */
   .products-container[data-view="list"] {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
-  .products-container[data-view="list"] .product-item {
-    flex-direction: row;
-    align-items: stretch;
-  }
-  .products-container[data-view="list"] .product-image-link {
-    width: 160px;
-    flex-shrink: 0;
-    aspect-ratio: 1 / 1;
-  }
-  @media (min-width: 640px) {
-    .products-container[data-view="list"] .product-image-link { width: 200px; }
-  }
-  .products-container[data-view="list"] .product-image { padding: 0.75rem; }
-  .products-container[data-view="list"] .product-meta  { display: flex; }
-
-  /* Hide list-only metadata in grid mode */
-  .products-container[data-view="grid"] .product-meta { display: none; }
+  .products-container[data-view="list"] .product-grid { display: none; }
 
   /* View-toggle active state */
   .view-btn[aria-pressed="true"] {
