@@ -423,3 +423,11 @@ export const getAllProtocols = (): string[] =>
 
 export const getAllApplications = (): string[] =>
   [...new Set(products.flatMap((p) => p.applications ?? []))].sort();
+
+export const getAllTags = (): string[] =>
+  [...new Set(products.flatMap((p) => p.tags ?? []))].sort();
+
+// Brand is derived from category prefix: 'haiwell-*' -> Haiwell, otherwise LEOS.
+export type Brand = 'LEOS' | 'Haiwell';
+export const getProductBrand = (p: Product): Brand =>
+  p.category.startsWith('haiwell') ? 'Haiwell' : 'LEOS';

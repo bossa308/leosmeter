@@ -1,114 +1,375 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ProductCard from '../../components/ProductCard.astro';
 import { Icon } from 'astro-icon/components';
-import { products, getAllProtocols, getAllApplications } from '../../data/products';
+import {
+  products,
+  getAllProtocols,
+  getAllApplications,
+  getAllTags,
+  getProductBrand,
+} from '../../data/products';
+import { categoryGroups } from '../../data/categories';
 
 const protocols    = getAllProtocols();
 const applications = getAllApplications();
-const categories   = [...new Set(products.map((p) => p.category))];
+const tags         = getAllTags();
+const brands       = ['LEOS', 'Haiwell'] as const;
+
+// Active categories = only categories that actually have products attached.
+const activeCategorySlugs = new Set(products.map((p) => p.category));
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/products/*.{svg,png,jpg,webp}',
+  { eager: true }
+);
 ---
 
 <BaseLayout
   title="สินค้าทั้งหมด — Industrial Meter, Modbus Gateway & IoT | LEOS METER"
-  description="รายการสินค้าอุปกรณ์วัดแสดงผลอุตสาหกรรม เพาเวอร์มิเตอร์ Modbus Gateway IoT MQTT LoRa NTP Clock Big Display จาก LEOS METER"
+  description="ค้นหาสินค้า LEOS METER & Haiwell PLC/HMI ด้วยตัวกรองตาม Brand, หมวดหมู่, Protocol, Application — แสดงผลแบบ Grid หรือ List"
 >
   <!-- Page header -->
-  <section class="bg-gray-50 border-b border-gray-200 py-12">
+  <section class="bg-gray-50 border-b border-gray-200 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav class="flex items-center gap-1.5 text-xs text-gray-500 mb-4" aria-label="breadcrumb">
+      <nav class="flex items-center gap-1.5 text-xs text-gray-500 mb-3" aria-label="breadcrumb">
         <a href="/" class="hover:text-brand transition-colors">หน้าแรก</a>
         <span class="text-gray-300">/</span>
-        <span class="text-gray-800 font-medium">สินค้า</span>
+        <span class="text-gray-800 font-medium">สินค้าทั้งหมด</span>
       </nav>
-      <p class="text-xs font-bold text-brand uppercase tracking-widest mb-2">Products</p>
+      <p class="text-xs font-bold text-brand uppercase tracking-widest mb-1">Product Finder</p>
       <h1 class="text-3xl md:text-4xl font-extrabold text-navy">สินค้าทั้งหมด</h1>
-      <p class="text-gray-500 mt-2 text-sm">{products.length} รายการ · Industrial Meter · Modbus Gateway · IoT · Display · NTP</p>
+      <p class="text-gray-500 mt-1.5 text-sm">{products.length} รายการ · กรองตาม Brand, หมวดหมู่, Protocol, Application</p>
     </div>
   </section>
 
-  <!-- Sticky filter bar -->
-  <div class="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-3">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[280px_1fr] lg:gap-8">
 
-      <!-- Row 1: Search + dropdowns -->
-      <div class="flex flex-col sm:flex-row gap-2">
-        <!-- Search -->
-        <div class="relative flex-1 max-w-sm">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
-            id="search-input"
-            type="search"
-            placeholder="ค้นหา Model, ชื่อสินค้า, Tag..."
-            class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
-            autocomplete="off"
-          />
+      <!-- ============== SIDEBAR (FILTERS) ============== -->
+      <aside id="filter-sidebar" class="hidden lg:block">
+        <div class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2 space-y-1">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Filters</h2>
+            <button
+              id="filter-clear"
+              type="button"
+              class="hidden text-xs font-semibold text-brand hover:underline"
+            >
+              ล้างทั้งหมด
+            </button>
+          </div>
+
+          <!-- Brand facet -->
+          <details class="group bg-white border border-gray-200 rounded-lg" open>
+            <summary class="flex items-center justify-between gap-2 px-3.5 py-2.5 cursor-pointer list-none text-sm font-semibold text-gray-800 hover:text-brand transition-colors">
+              <span>Brand</span>
+              <Icon name="lucide:chevron-down" class="w-4 h-4 shrink-0 transition-transform group-open:rotate-180 text-gray-400" aria-hidden="true" />
+            </summary>
+            <div class="px-3.5 pb-3 pt-0.5 space-y-1.5">
+              {brands.map((b) => (
+                <label class="flex items-center gap-2 text-sm text-gray-700 hover:text-brand cursor-pointer">
+                  <input
+                    type="checkbox"
+                    class="filter-input rounded border-gray-300 text-brand focus:ring-brand/30 w-4 h-4"
+                    data-facet="brand"
+                    value={b}
+                  />
+                  <span class="flex-1">{b}</span>
+                  <span class="text-xs text-gray-400" data-count-brand={b}></span>
+                </label>
+              ))}
+            </div>
+          </details>
+
+          <!-- Category facet (grouped) -->
+          <details class="group bg-white border border-gray-200 rounded-lg" open>
+            <summary class="flex items-center justify-between gap-2 px-3.5 py-2.5 cursor-pointer list-none text-sm font-semibold text-gray-800 hover:text-brand transition-colors">
+              <span>หมวดหมู่</span>
+              <Icon name="lucide:chevron-down" class="w-4 h-4 shrink-0 transition-transform group-open:rotate-180 text-gray-400" aria-hidden="true" />
+            </summary>
+            <div class="px-3.5 pb-3 pt-0.5 space-y-3">
+              {categoryGroups.map((group) => {
+                const visible = group.categories.filter((c) => activeCategorySlugs.has(c.slug));
+                if (visible.length === 0) return null;
+                return (
+                  <div>
+                    <p class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                      <Icon name={group.icon} class="w-3 h-3" aria-hidden="true" />
+                      {group.name}
+                    </p>
+                    <div class="space-y-1.5 pl-1">
+                      {visible.map((cat) => (
+                        <label class="flex items-center gap-2 text-sm text-gray-700 hover:text-brand cursor-pointer">
+                          <input
+                            type="checkbox"
+                            class="filter-input rounded border-gray-300 text-brand focus:ring-brand/30 w-4 h-4"
+                            data-facet="category"
+                            value={cat.slug}
+                          />
+                          <span class="flex-1">{cat.name}</span>
+                          <span class="text-xs text-gray-400" data-count-category={cat.slug}></span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+
+          <!-- Protocol facet -->
+          {protocols.length > 0 && (
+            <details class="group bg-white border border-gray-200 rounded-lg" open>
+              <summary class="flex items-center justify-between gap-2 px-3.5 py-2.5 cursor-pointer list-none text-sm font-semibold text-gray-800 hover:text-brand transition-colors">
+                <span>Protocol</span>
+                <Icon name="lucide:chevron-down" class="w-4 h-4 shrink-0 transition-transform group-open:rotate-180 text-gray-400" aria-hidden="true" />
+              </summary>
+              <div class="px-3.5 pb-3 pt-0.5 space-y-1.5">
+                {protocols.map((p) => (
+                  <label class="flex items-center gap-2 text-sm text-gray-700 hover:text-brand cursor-pointer">
+                    <input
+                      type="checkbox"
+                      class="filter-input rounded border-gray-300 text-brand focus:ring-brand/30 w-4 h-4"
+                      data-facet="protocol"
+                      value={p}
+                    />
+                    <span class="flex-1">{p}</span>
+                    <span class="text-xs text-gray-400" data-count-protocol={p}></span>
+                  </label>
+                ))}
+              </div>
+            </details>
+          )}
+
+          <!-- Application facet -->
+          {applications.length > 0 && (
+            <details class="group bg-white border border-gray-200 rounded-lg">
+              <summary class="flex items-center justify-between gap-2 px-3.5 py-2.5 cursor-pointer list-none text-sm font-semibold text-gray-800 hover:text-brand transition-colors">
+                <span>Application</span>
+                <Icon name="lucide:chevron-down" class="w-4 h-4 shrink-0 transition-transform group-open:rotate-180 text-gray-400" aria-hidden="true" />
+              </summary>
+              <div class="px-3.5 pb-3 pt-0.5 space-y-1.5">
+                {applications.map((a) => (
+                  <label class="flex items-center gap-2 text-sm text-gray-700 hover:text-brand cursor-pointer">
+                    <input
+                      type="checkbox"
+                      class="filter-input rounded border-gray-300 text-brand focus:ring-brand/30 w-4 h-4"
+                      data-facet="application"
+                      value={a}
+                    />
+                    <span class="flex-1 leading-tight">{a}</span>
+                    <span class="text-xs text-gray-400" data-count-application={a}></span>
+                  </label>
+                ))}
+              </div>
+            </details>
+          )}
+
+          <!-- Tag facet -->
+          {tags.length > 0 && (
+            <details class="group bg-white border border-gray-200 rounded-lg">
+              <summary class="flex items-center justify-between gap-2 px-3.5 py-2.5 cursor-pointer list-none text-sm font-semibold text-gray-800 hover:text-brand transition-colors">
+                <span>Features / Tags</span>
+                <Icon name="lucide:chevron-down" class="w-4 h-4 shrink-0 transition-transform group-open:rotate-180 text-gray-400" aria-hidden="true" />
+              </summary>
+              <div class="px-3.5 pb-3 pt-0.5 space-y-1.5">
+                {tags.map((t) => (
+                  <label class="flex items-center gap-2 text-sm text-gray-700 hover:text-brand cursor-pointer">
+                    <input
+                      type="checkbox"
+                      class="filter-input rounded border-gray-300 text-brand focus:ring-brand/30 w-4 h-4"
+                      data-facet="tag"
+                      value={t}
+                    />
+                    <span class="flex-1">{t}</span>
+                    <span class="text-xs text-gray-400" data-count-tag={t}></span>
+                  </label>
+                ))}
+              </div>
+            </details>
+          )}
+        </div>
+      </aside>
+
+      <!-- ============== MAIN CONTENT ============== -->
+      <main class="min-w-0">
+        <!-- Top toolbar -->
+        <div class="flex flex-col sm:flex-row gap-3 mb-4">
+          <!-- Search -->
+          <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              id="search-input"
+              type="search"
+              placeholder="ค้นหา Model, ชื่อสินค้า, Tag..."
+              class="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+              autocomplete="off"
+            />
+          </div>
+
+          <!-- Mobile filter trigger -->
+          <button
+            id="filter-mobile-open"
+            type="button"
+            class="lg:hidden inline-flex items-center justify-center gap-2 text-sm font-semibold border border-gray-200 rounded-lg px-4 py-2.5 hover:border-brand hover:text-brand transition-colors"
+          >
+            <Icon name="lucide:sliders-horizontal" class="w-4 h-4" aria-hidden="true" />
+            ตัวกรอง
+            <span id="filter-count-badge" class="hidden bg-brand text-white text-[10px] font-bold rounded-full px-1.5 min-w-[18px] text-center">0</span>
+          </button>
+
+          <!-- Sort -->
+          <select
+            id="sort-select"
+            class="text-sm border border-gray-200 rounded-lg px-3 py-2.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand/30 sm:w-[180px]"
+          >
+            <option value="featured">เรียง: แนะนำ</option>
+            <option value="name-asc">ชื่อ A → Z</option>
+            <option value="name-desc">ชื่อ Z → A</option>
+            <option value="model">Model</option>
+          </select>
+
+          <!-- View toggle -->
+          <div role="group" aria-label="View mode" class="inline-flex border border-gray-200 rounded-lg overflow-hidden shrink-0">
+            <button
+              type="button"
+              id="view-grid"
+              class="view-btn px-3 py-2.5 text-gray-500 hover:text-brand bg-white"
+              title="Grid view"
+              aria-label="Grid view"
+            >
+              <Icon name="lucide:layout-grid" class="w-4 h-4" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              id="view-list"
+              class="view-btn px-3 py-2.5 text-gray-500 hover:text-brand bg-white border-l border-gray-200"
+              title="List view"
+              aria-label="List view"
+            >
+              <Icon name="lucide:list" class="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
-        <!-- Protocol dropdown -->
-        <select id="filter-protocol" class="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand/30 sm:max-w-[180px]">
-          <option value="">Protocol ทั้งหมด</option>
-          {protocols.map((p) => <option value={p}>{p}</option>)}
-        </select>
+        <!-- Active filter chips -->
+        <div id="active-filters" class="hidden flex-wrap gap-1.5 mb-4"></div>
 
-        <!-- Application dropdown -->
-        <select id="filter-app" class="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand/30 sm:max-w-[200px]">
-          <option value="">Application ทั้งหมด</option>
-          {applications.map((a) => <option value={a}>{a}</option>)}
-        </select>
+        <!-- Result count -->
+        <div class="flex items-center justify-between mb-4 text-sm">
+          <p id="result-count" class="text-gray-500">{products.length} รายการ</p>
+        </div>
 
-        <!-- Clear -->
-        <button id="filter-clear" class="hidden text-sm text-gray-500 hover:text-brand px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap border border-gray-200">
-          <Icon name="lucide:x" class="w-4 h-4 inline" aria-hidden="true" />
-          ล้างตัวกรอง
+        <!-- Product list -->
+        <div id="products-container" data-view="grid" class="products-container">
+          {products.map((product) => {
+            const imgSrc   = images[`/src/assets/products/${product.image}`]?.default;
+            const brand    = getProductBrand(product);
+            const protoStr = (product.protocols ?? []).join('|');
+            const appStr   = (product.applications ?? []).join('|');
+            const tagStr   = product.tags.join('|');
+            return (
+              <article
+                class="product-item bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md hover:border-brand/30 transition-all"
+                data-name={product.name.toLowerCase()}
+                data-model={(product.model ?? '').toLowerCase()}
+                data-desc={product.shortDescription.toLowerCase()}
+                data-tag={tagStr.toLowerCase()}
+                data-brand={brand}
+                data-category={product.category}
+                data-protocol={protoStr}
+                data-application={appStr}
+                data-featured={product.featured ? '1' : '0'}
+              >
+                <a href={`/products/${product.slug}`} class="product-image-link block bg-gray-50 flex items-center justify-center">
+                  {imgSrc ? (
+                    <img
+                      src={imgSrc.src}
+                      alt={product.name}
+                      width={600}
+                      height={450}
+                      loading="lazy"
+                      decoding="async"
+                      class="product-image w-full h-full object-contain"
+                    />
+                  ) : (
+                    <span class="text-gray-300 text-4xl font-bold">{product.name.charAt(0)}</span>
+                  )}
+                </a>
+                <div class="product-body p-4 flex flex-col flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 mb-2 flex-wrap">
+                    <span class={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${brand === 'Haiwell' ? 'bg-orange-100 text-orange-700' : 'bg-brand/10 text-brand'}`}>
+                      {brand}
+                    </span>
+                    <span class="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                      {product.category.replace(/-/g, ' ')}
+                    </span>
+                    {product.model && (
+                      <span class="text-[10px] font-mono text-gray-400 hidden lg:inline">
+                        {product.model}
+                      </span>
+                    )}
+                  </div>
+                  <h3 class="font-bold text-gray-900 text-base leading-snug mb-1 product-title">{product.name}</h3>
+                  <p class="text-sm text-gray-500 leading-relaxed flex-1 product-desc">{product.shortDescription}</p>
+
+                  <!-- List-mode-only meta row -->
+                  <div class="product-meta hidden mt-3 flex flex-wrap gap-1.5">
+                    {(product.protocols ?? []).slice(0, 4).map((p) => (
+                      <span class="text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-full">{p}</span>
+                    ))}
+                  </div>
+
+                  <a
+                    href={`/products/${product.slug}`}
+                    class="mt-3 text-sm text-brand font-semibold hover:underline inline-flex items-center gap-1 self-start"
+                  >
+                    ดูรายละเอียด
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <!-- Empty state -->
+        <div id="no-results" class="hidden text-center py-20">
+          <Icon name="lucide:search-x" class="w-12 h-12 text-gray-200 mx-auto mb-3" aria-hidden="true" />
+          <p class="text-gray-500 text-sm">ไม่พบสินค้าที่ตรงกับตัวกรอง</p>
+          <button id="empty-clear" type="button" class="mt-3 text-sm text-brand hover:underline">ล้างตัวกรองทั้งหมด</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ============== MOBILE FILTER DRAWER ============== -->
+  <div id="filter-drawer" class="fixed inset-0 z-[60] hidden lg:!hidden" aria-hidden="true">
+    <div id="filter-drawer-backdrop" class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-[85%] max-w-sm bg-white shadow-xl flex flex-col">
+      <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+        <h2 class="font-bold text-gray-900">ตัวกรอง</h2>
+        <button id="filter-mobile-close" type="button" class="p-1.5 text-gray-500 hover:text-gray-900" aria-label="Close">
+          <Icon name="lucide:x" class="w-5 h-5" aria-hidden="true" />
         </button>
       </div>
-
-      <!-- Row 2: Category pills -->
-      <nav id="cat-filter" class="flex gap-1.5 overflow-x-auto scrollbar-none" aria-label="กรองหมวดหมู่">
-        <button data-cat="all" class="cat-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-brand bg-brand text-white whitespace-nowrap shrink-0 transition-colors">
-          ทั้งหมด
+      <div id="filter-drawer-content" class="flex-1 overflow-y-auto p-4">
+        <!-- Sidebar contents are cloned here at runtime by JS -->
+      </div>
+      <div class="border-t border-gray-200 px-4 py-3 flex gap-2">
+        <button id="filter-mobile-clear" type="button" class="flex-1 text-sm font-semibold border border-gray-200 rounded-lg py-2.5 hover:border-brand hover:text-brand transition-colors">
+          ล้างตัวกรอง
         </button>
-        {categories.map((cat) => (
-          <button data-cat={cat} class="cat-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:border-brand hover:text-brand whitespace-nowrap shrink-0 transition-colors">
-            {cat.replace(/-/g, ' ')}
-          </button>
-        ))}
-      </nav>
+        <button id="filter-mobile-apply" type="button" class="flex-1 text-sm font-semibold bg-brand text-white rounded-lg py-2.5 hover:bg-brand/90 transition-colors">
+          ดูสินค้า
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- Product grid -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <p id="result-count" class="text-sm text-gray-500 mb-5">{products.length} รายการ</p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="product-grid">
-      {products.map((product) => (
-        <div
-          class="product-item"
-          data-name={product.name.toLowerCase()}
-          data-model={(product.model ?? '').toLowerCase()}
-          data-desc={product.shortDescription.toLowerCase()}
-          data-tags={product.tags.join(' ').toLowerCase()}
-          data-cat={product.category}
-          data-protocols={(product.protocols ?? []).join('|').toLowerCase()}
-          data-apps={(product.applications ?? []).join('|').toLowerCase()}
-        >
-          <ProductCard product={product} />
-        </div>
-      ))}
-    </div>
-
-    <!-- Empty state -->
-    <div id="no-results" class="hidden text-center py-20">
-      <Icon name="lucide:search-x" class="w-12 h-12 text-gray-200 mx-auto mb-3" aria-hidden="true" />
-      <p class="text-gray-500 text-sm">ไม่พบสินค้าที่ตรงกับตัวกรอง</p>
-      <button onclick="document.getElementById('filter-clear').click()" class="mt-3 text-sm text-brand hover:underline">ล้างตัวกรองทั้งหมด</button>
-    </div>
-  </div>
-
-  <!-- Product Selector CTA -->
+  <!-- Help CTA -->
   <section class="bg-gray-50 border-t border-gray-200 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-xs font-bold text-brand uppercase tracking-widest mb-2">Need Help Choosing?</p>
@@ -122,85 +383,307 @@ const categories   = [...new Set(products.map((p) => p.category))];
   </section>
 </BaseLayout>
 
+<style>
+  /* Grid view (default) */
+  .products-container[data-view="grid"] {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .products-container[data-view="grid"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1024px) {
+    .products-container[data-view="grid"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1280px) {
+    .products-container[data-view="grid"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  .products-container[data-view="grid"] .product-image-link { aspect-ratio: 4 / 3; }
+  .products-container[data-view="grid"] .product-image       { padding: 1rem; }
+  .products-container[data-view="grid"] .product-item        { display: flex; flex-direction: column; }
+
+  /* List view */
+  .products-container[data-view="list"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .products-container[data-view="list"] .product-item {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .products-container[data-view="list"] .product-image-link {
+    width: 160px;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+  }
+  @media (min-width: 640px) {
+    .products-container[data-view="list"] .product-image-link { width: 200px; }
+  }
+  .products-container[data-view="list"] .product-image { padding: 0.75rem; }
+  .products-container[data-view="list"] .product-meta  { display: flex; }
+
+  /* Hide list-only metadata in grid mode */
+  .products-container[data-view="grid"] .product-meta { display: none; }
+
+  /* View-toggle active state */
+  .view-btn[aria-pressed="true"] {
+    background-color: rgb(var(--brand-rgb, 11 61 145) / 0.1);
+    color: var(--brand, #0B3D91);
+  }
+</style>
+
 <script>
-  const searchInput    = document.getElementById('search-input')    as HTMLInputElement;
-  const protocolSelect = document.getElementById('filter-protocol') as HTMLSelectElement;
-  const appSelect      = document.getElementById('filter-app')      as HTMLSelectElement;
-  const clearBtn       = document.getElementById('filter-clear')!;
-  const catBtns        = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
-  const items          = document.querySelectorAll<HTMLElement>('.product-item');
-  const noResults      = document.getElementById('no-results')!;
-  const countEl        = document.getElementById('result-count')!;
+  type Facet = 'brand' | 'category' | 'protocol' | 'application' | 'tag';
+  const FACETS: Facet[] = ['brand', 'category', 'protocol', 'application', 'tag'];
 
-  let activeCat = 'all';
+  const $  = <T extends HTMLElement>(s: string) => document.querySelector<T>(s);
+  const $$ = <T extends HTMLElement>(s: string) => Array.from(document.querySelectorAll<T>(s));
 
-  function getFilters() {
-    return {
-      q:        searchInput.value.toLowerCase().trim(),
-      protocol: protocolSelect.value.toLowerCase(),
-      app:      appSelect.value.toLowerCase(),
-    };
+  const searchInput   = $<HTMLInputElement>('#search-input')!;
+  const sortSelect    = $<HTMLSelectElement>('#sort-select')!;
+  const container     = $<HTMLElement>('#products-container')!;
+  const items         = $$<HTMLElement>('.product-item');
+  const noResults     = $<HTMLElement>('#no-results')!;
+  const countEl       = $<HTMLElement>('#result-count')!;
+  const clearBtn      = $<HTMLButtonElement>('#filter-clear')!;
+  const emptyClearBtn = $<HTMLButtonElement>('#empty-clear')!;
+  const chipsEl       = $<HTMLElement>('#active-filters')!;
+  const countBadge    = $<HTMLElement>('#filter-count-badge')!;
+
+  const viewGridBtn = $<HTMLButtonElement>('#view-grid')!;
+  const viewListBtn = $<HTMLButtonElement>('#view-list')!;
+
+  // Mobile drawer wiring
+  const drawer        = $<HTMLElement>('#filter-drawer')!;
+  const drawerContent = $<HTMLElement>('#filter-drawer-content')!;
+  const sidebar       = $<HTMLElement>('#filter-sidebar')!;
+  const openMobile    = $<HTMLButtonElement>('#filter-mobile-open')!;
+  const closeMobile   = $<HTMLButtonElement>('#filter-mobile-close')!;
+  const backdrop      = $<HTMLElement>('#filter-drawer-backdrop')!;
+  const applyMobile   = $<HTMLButtonElement>('#filter-mobile-apply')!;
+  const clearMobile   = $<HTMLButtonElement>('#filter-mobile-clear')!;
+
+  // Selected values per facet (Set for fast lookup).
+  const selected: Record<Facet, Set<string>> = {
+    brand: new Set(),
+    category: new Set(),
+    protocol: new Set(),
+    application: new Set(),
+    tag: new Set(),
+  };
+
+  // ----- Filtering -----
+
+  function itemMatches(el: HTMLElement, q: string): boolean {
+    // Free-text search across name + model + desc + tag.
+    if (q) {
+      const haystack = `${el.dataset.name} ${el.dataset.model} ${el.dataset.desc} ${el.dataset.tag}`;
+      if (!haystack.includes(q)) return false;
+    }
+    for (const facet of FACETS) {
+      const sel = selected[facet];
+      if (sel.size === 0) continue;
+      const raw = el.dataset[facet] ?? '';
+      // Multi-value attrs are pipe-separated; single-value just compares directly.
+      const values = raw.includes('|') ? raw.split('|') : [raw];
+      const hit = [...sel].some((v) => values.includes(v));
+      if (!hit) return false;
+    }
+    return true;
   }
 
-  function hasActiveFilter() {
-    const f = getFilters();
-    return f.q !== '' || f.protocol !== '' || f.app !== '' || activeCat !== 'all';
+  function activeFilterCount(): number {
+    return FACETS.reduce((sum, f) => sum + selected[f].size, 0);
   }
 
-  function filter() {
-    const { q, protocol, app } = getFilters();
+  function applyFilters() {
+    const q = searchInput.value.toLowerCase().trim();
     let visible = 0;
-
-    items.forEach((item) => {
-      const matchCat      = activeCat === 'all' || item.dataset.cat === activeCat;
-      const haystack      = `${item.dataset.name} ${item.dataset.model} ${item.dataset.desc} ${item.dataset.tags}`;
-      const matchSearch   = q       === '' || haystack.includes(q);
-      const matchProtocol = protocol === '' || (item.dataset.protocols ?? '').includes(protocol);
-      const matchApp      = app      === '' || (item.dataset.apps ?? '').includes(app);
-
-      const show = matchCat && matchSearch && matchProtocol && matchApp;
-      item.style.display = show ? '' : 'none';
+    items.forEach((el) => {
+      const show = itemMatches(el, q);
+      el.style.display = show ? '' : 'none';
       if (show) visible++;
     });
 
-    noResults.classList.toggle('hidden', visible > 0);
     countEl.textContent = `${visible} รายการ`;
-    clearBtn.classList.toggle('hidden', !hasActiveFilter());
+    noResults.classList.toggle('hidden', visible > 0);
+
+    const activeCount = activeFilterCount() + (q ? 1 : 0);
+    clearBtn.classList.toggle('hidden', activeCount === 0);
+    countBadge.classList.toggle('hidden', activeCount === 0);
+    countBadge.textContent = String(activeCount);
+
+    renderChips();
+    updateFacetCounts();
+    sortItems();
   }
 
-  function clearFilters() {
-    searchInput.value  = '';
-    protocolSelect.value = '';
-    appSelect.value    = '';
-    activeCat = 'all';
-    catBtns.forEach((b) => {
-      const isAll = b.dataset.cat === 'all';
-      b.classList.toggle('bg-brand',       isAll);
-      b.classList.toggle('text-white',     isAll);
-      b.classList.toggle('border-brand',   isAll);
-      b.classList.toggle('text-gray-600',  !isAll);
-      b.classList.toggle('border-gray-200',!isAll);
+  // ----- Sort -----
+
+  function sortItems() {
+    const mode = sortSelect.value;
+    const visible = items.filter((el) => el.style.display !== 'none');
+    visible.sort((a, b) => {
+      switch (mode) {
+        case 'name-asc':  return (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '');
+        case 'name-desc': return (b.dataset.name ?? '').localeCompare(a.dataset.name ?? '');
+        case 'model':     return (a.dataset.model ?? '').localeCompare(b.dataset.model ?? '');
+        case 'featured':
+        default:
+          // Featured first, then by name.
+          const fa = a.dataset.featured === '1' ? 0 : 1;
+          const fb = b.dataset.featured === '1' ? 0 : 1;
+          if (fa !== fb) return fa - fb;
+          return (a.dataset.name ?? '').localeCompare(b.dataset.name ?? '');
+      }
     });
-    filter();
+    visible.forEach((el) => container.appendChild(el));
   }
 
-  searchInput.addEventListener('input', filter);
-  protocolSelect.addEventListener('change', filter);
-  appSelect.addEventListener('change', filter);
-  clearBtn.addEventListener('click', clearFilters);
+  // ----- Active filter chips -----
 
-  catBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      activeCat = btn.dataset.cat ?? 'all';
-      catBtns.forEach((b) => {
-        const isActive = b.dataset.cat === activeCat;
-        b.classList.toggle('bg-brand',       isActive);
-        b.classList.toggle('text-white',     isActive);
-        b.classList.toggle('border-brand',   isActive);
-        b.classList.toggle('text-gray-600',  !isActive);
-        b.classList.toggle('border-gray-200',!isActive);
+  function renderChips() {
+    chipsEl.innerHTML = '';
+    const total = activeFilterCount();
+    if (total === 0) {
+      chipsEl.classList.add('hidden');
+      chipsEl.classList.remove('flex');
+      return;
+    }
+    chipsEl.classList.remove('hidden');
+    chipsEl.classList.add('flex');
+
+    FACETS.forEach((facet) => {
+      selected[facet].forEach((value) => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'inline-flex items-center gap-1.5 text-xs font-semibold bg-brand/10 text-brand border border-brand/20 rounded-full px-2.5 py-1 hover:bg-brand/15';
+        chip.innerHTML = `<span class="text-[10px] uppercase tracking-wider opacity-60">${facet}:</span><span>${value}</span><svg class="w-3 h-3 opacity-60" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+        chip.addEventListener('click', () => {
+          selected[facet].delete(value);
+          syncCheckboxes();
+          applyFilters();
+        });
+        chipsEl.appendChild(chip);
       });
-      filter();
     });
-  });
+  }
+
+  // ----- Checkbox sync (sidebar + drawer share visual state via re-applying) -----
+
+  function syncCheckboxes() {
+    $$<HTMLInputElement>('.filter-input').forEach((cb) => {
+      const facet = cb.dataset.facet as Facet;
+      cb.checked = selected[facet]?.has(cb.value) ?? false;
+    });
+  }
+
+  // ----- Per-facet count update (next to each checkbox) -----
+
+  function updateFacetCounts() {
+    // For each facet+value, count how many items would match if THIS value were
+    // toggled on (other facets remain as-is). This gives realistic counts.
+    const q = searchInput.value.toLowerCase().trim();
+
+    FACETS.forEach((facet) => {
+      const valueCounts: Record<string, number> = {};
+      items.forEach((el) => {
+        // Temporarily ignore this facet.
+        const original = selected[facet];
+        selected[facet] = new Set();
+        const baseMatch = itemMatches(el, q);
+        selected[facet] = original;
+        if (!baseMatch) return;
+
+        const raw = el.dataset[facet] ?? '';
+        const values = raw.includes('|') ? raw.split('|') : (raw ? [raw] : []);
+        values.forEach((v) => {
+          if (!v) return;
+          valueCounts[v] = (valueCounts[v] ?? 0) + 1;
+        });
+      });
+
+      // Write counts to all elements with [data-count-<facet>=<value>].
+      $$<HTMLElement>(`[data-count-${facet}]`).forEach((el) => {
+        const v = el.getAttribute(`data-count-${facet}`)!;
+        const c = valueCounts[v] ?? 0;
+        el.textContent = c > 0 ? String(c) : '';
+      });
+    });
+  }
+
+  // ----- Event wiring -----
+
+  function bindCheckboxes(root: ParentNode) {
+    root.querySelectorAll<HTMLInputElement>('.filter-input').forEach((cb) => {
+      cb.addEventListener('change', () => {
+        const facet = cb.dataset.facet as Facet;
+        if (cb.checked) selected[facet].add(cb.value);
+        else            selected[facet].delete(cb.value);
+        syncCheckboxes();
+        applyFilters();
+      });
+    });
+  }
+
+  function clearAll() {
+    FACETS.forEach((f) => selected[f].clear());
+    searchInput.value = '';
+    syncCheckboxes();
+    applyFilters();
+  }
+
+  searchInput.addEventListener('input', applyFilters);
+  sortSelect.addEventListener('change', applyFilters);
+  clearBtn.addEventListener('click', clearAll);
+  emptyClearBtn.addEventListener('click', clearAll);
+
+  bindCheckboxes(sidebar);
+
+  // ----- View toggle (grid / list) -----
+
+  function setView(view: 'grid' | 'list') {
+    container.dataset.view = view;
+    viewGridBtn.setAttribute('aria-pressed', String(view === 'grid'));
+    viewListBtn.setAttribute('aria-pressed', String(view === 'list'));
+    try { localStorage.setItem('leos-product-view', view); } catch {}
+  }
+  viewGridBtn.addEventListener('click', () => setView('grid'));
+  viewListBtn.addEventListener('click', () => setView('list'));
+  const savedView = (() => {
+    try { return localStorage.getItem('leos-product-view'); } catch { return null; }
+  })();
+  setView(savedView === 'list' ? 'list' : 'grid');
+
+  // ----- Mobile drawer -----
+
+  function openDrawer() {
+    // Clone the sidebar contents into the drawer so checkbox state is shared
+    // visually. We re-bind change listeners on the cloned inputs.
+    drawerContent.innerHTML = '';
+    const clone = sidebar.firstElementChild!.cloneNode(true) as HTMLElement;
+    // Strip sticky/overflow constraints from clone.
+    clone.classList.remove('sticky', 'top-24', 'max-h-[calc(100vh-7rem)]', 'overflow-y-auto');
+    drawerContent.appendChild(clone);
+    syncCheckboxes(); // ensure cloned checkboxes reflect selected state
+    bindCheckboxes(drawerContent);
+    drawer.classList.remove('hidden');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    drawer.classList.add('hidden');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  openMobile.addEventListener('click', openDrawer);
+  closeMobile.addEventListener('click', closeDrawer);
+  backdrop.addEventListener('click', closeDrawer);
+  applyMobile.addEventListener('click', closeDrawer);
+  clearMobile.addEventListener('click', () => { clearAll(); closeDrawer(); });
+
+  // ----- Initial state -----
+  applyFilters();
 </script>
