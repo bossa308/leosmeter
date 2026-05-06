@@ -3,6 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { products, getProductBySlug } from '../../data/products';
 import { site } from '../../data/site';
+import { downloadFileExists } from '../../lib/downloads-fs';
+import { getCollection } from 'astro:content';
 
 export function getStaticPaths() {
   return products.map((p) => ({
@@ -22,6 +24,27 @@ const imgSrc = images[`/src/assets/products/${product.image}`]?.default;
 const related = (product.relatedProducts ?? [])
   .map((slug) => getProductBySlug(slug))
   .filter(Boolean) as typeof products;
+
+const productDownloads = (product.downloads ?? []).map((dl) => ({
+  ...dl,
+  available: downloadFileExists(dl.filename),
+}));
+
+// Cross-link tutorials that mention this product (by slug or model number).
+const allTutorials = await getCollection('tutorial');
+const productKeywords = [
+  product.slug,
+  product.id,
+  product.model,
+  ...(product.tags ?? []),
+].filter(Boolean).map((s) => String(s).toLowerCase());
+
+const relatedTutorials = allTutorials
+  .filter((t) => {
+    const haystack = (t.data.title + ' ' + t.data.description + ' ' + (t.data.tags ?? []).join(' ') + ' ' + t.body).toLowerCase();
+    return productKeywords.some((k) => k && haystack.includes(k));
+  })
+  .slice(0, 4);
 
 const protocolColors: Record<string, string> = {
   'Modbus RTU':    'bg-blue-100 text-blue-800',
@@ -171,7 +194,7 @@ const docTypeIcon: Record<string, string> = {
             <Icon name="lucide:message-circle" class="w-4 h-4" aria-hidden="true" />
             ส่งรุ่นนี้ให้ฝ่ายขายผ่าน LINE {site.lineId}
           </a>
-          {product.downloads && product.downloads.length > 0 && (
+          {productDownloads.length > 0 && (
             <a
               href="#downloads"
               class="flex items-center justify-center gap-2 border border-gray-300 text-gray-700 font-semibold px-6 py-3 rounded-lg hover:border-brand hover:text-brand transition-colors text-sm"
@@ -220,8 +243,11 @@ const docTypeIcon: Record<string, string> = {
         <a href="#overview"        class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Overview</a>
         <a href="#features"        class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Features</a>
         <a href="#specifications"  class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Specifications</a>
-        {product.downloads && product.downloads.length > 0 && (
+        {productDownloads.length > 0 && (
           <a href="#downloads"     class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Downloads</a>
+        )}
+        {relatedTutorials.length > 0 && (
+          <a href="#tutorials"     class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">Tutorials</a>
         )}
         {product.faqs && product.faqs.length > 0 && (
           <a href="#faq"           class="py-4 text-sm font-semibold text-gray-500 hover:text-brand border-b-2 border-transparent hover:border-brand transition-colors whitespace-nowrap">FAQ</a>
@@ -274,12 +300,12 @@ const docTypeIcon: Record<string, string> = {
       )}
 
       <!-- ── Downloads ── -->
-      {product.downloads && product.downloads.length > 0 && (
+      {productDownloads.length > 0 && (
         <section id="downloads" class="py-12 border-b border-gray-200 scroll-mt-32">
           <h2 class="text-xl font-extrabold text-navy mb-2">Downloads</h2>
           <p class="text-sm text-gray-500 mb-6">ไฟล์เอกสารและคู่มือสำหรับรุ่น {product.model ?? product.name}</p>
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {product.downloads.map((dl) => (
+            {productDownloads.map((dl) => (
               <div class="bg-white border border-gray-200 rounded-xl p-4 flex items-start gap-3 hover:border-brand/30 hover:shadow-sm transition-all">
                 <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center shrink-0">
                   <Icon name={docTypeIcon[dl.type] ?? 'lucide:file'} class="w-5 h-5 text-brand" aria-hidden="true" />
@@ -292,16 +318,33 @@ const docTypeIcon: Record<string, string> = {
                     </span>
                     {dl.lang && <span class="text-xs text-gray-400">{dl.lang}</span>}
                     {dl.version && <span class="text-xs text-gray-400">{dl.version}</span>}
+                    {!dl.available && (
+                      <span class="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full font-semibold">
+                        ขอจากทีมงาน
+                      </span>
+                    )}
                   </div>
                 </div>
-                <a
-                  href={`/downloads/${dl.filename}`}
-                  class="shrink-0 text-brand hover:bg-brand hover:text-white border border-brand/30 rounded-lg p-1.5 transition-colors"
-                  title={`Download ${dl.label}`}
-                  aria-label={`Download ${dl.label}`}
-                >
-                  <Icon name="lucide:download" class="w-4 h-4" aria-hidden="true" />
-                </a>
+                {dl.available ? (
+                  <a
+                    href={`/downloads/${dl.filename}`}
+                    class="shrink-0 text-brand hover:bg-brand hover:text-white border border-brand/30 rounded-lg p-1.5 transition-colors"
+                    title={`Download ${dl.label}`}
+                    aria-label={`Download ${dl.label}`}
+                    download
+                  >
+                    <Icon name="lucide:download" class="w-4 h-4" aria-hidden="true" />
+                  </a>
+                ) : (
+                  <a
+                    href={`/contact?subject=${encodeURIComponent('ขอเอกสาร ' + dl.label + ' (' + (product.model ?? product.name) + ')')}`}
+                    class="shrink-0 text-gray-500 hover:text-brand hover:border-brand border border-gray-200 rounded-lg p-1.5 transition-colors"
+                    title="ขอเอกสารจากทีมงาน"
+                    aria-label="ขอเอกสารจากทีมงาน"
+                  >
+                    <Icon name="lucide:mail" class="w-4 h-4" aria-hidden="true" />
+                  </a>
+                )}
               </div>
             ))}
           </div>
@@ -326,6 +369,45 @@ const docTypeIcon: Record<string, string> = {
                   <p class="pt-3">{faq.a}</p>
                 </div>
               </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- ── Tutorials & Knowledge Base ── -->
+      {relatedTutorials.length > 0 && (
+        <section id="tutorials" class="py-12 border-b border-gray-200 scroll-mt-32">
+          <div class="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <h2 class="text-xl font-extrabold text-navy">Tutorials & Knowledge Base</h2>
+              <p class="text-sm text-gray-500 mt-1">บทความที่เกี่ยวข้องกับรุ่น {product.model ?? product.name}</p>
+            </div>
+            <a href="/tutorial" class="text-xs font-semibold text-brand hover:underline whitespace-nowrap">ดูทั้งหมด →</a>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {relatedTutorials.map((t) => (
+              <a
+                href={`/tutorial/${t.slug}`}
+                class="group bg-white border border-gray-200 rounded-xl p-5 hover:border-brand/30 hover:shadow-sm transition-all flex gap-4"
+              >
+                <div class="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center shrink-0">
+                  <Icon
+                    name={
+                      t.data.category === 'firmware' ? 'lucide:cpu' :
+                      t.data.category === 'manual'   ? 'lucide:book-open' :
+                      t.data.category === 'qa'       ? 'lucide:help-circle' :
+                                                       'lucide:graduation-cap'
+                    }
+                    class="w-5 h-5 text-brand"
+                    aria-hidden="true"
+                  />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t.data.category}</p>
+                  <p class="font-bold text-gray-800 text-sm leading-snug group-hover:text-brand transition-colors">{t.data.title}</p>
+                  <p class="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">{t.data.description}</p>
+                </div>
+              </a>
             ))}
           </div>
         </section>

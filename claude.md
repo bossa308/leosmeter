@@ -15,7 +15,9 @@ The primary content language is **Thai**. English may appear in technical produc
 - **Framework:** Astro (latest stable, currently v5.x)
 - **Styling:** Tailwind CSS via the official Astro integration (`@astrojs/tailwind`)
 - **Language:** TypeScript with `strict: true`
-- **Content:** Astro Content Collections (markdown / MDX files in `src/content/`)
+- **Content:**
+  - **Products / categories / solutions / downloads:** plain TypeScript data modules in `src/data/` (single-source-of-truth arrays). Chosen over content collections so technical specs can be authored as structured TS rather than markdown frontmatter.
+  - **Tutorials / FAQs / firmware notes:** Astro Content Collections (MDX in `src/content/tutorial/`).
 - **Icons:** `astro-icon` with the `lucide` icon set
 - **Forms:** Web3Forms (no backend required) — access key goes in `.env` as `PUBLIC_WEB3FORMS_KEY`
 - **Hosting:** Cloudflare Pages (build command `npm run build`, output dir `dist`)
@@ -39,58 +41,33 @@ The primary content language is **Thai**. English may appear in technical produc
 ├── tsconfig.json
 ├── public/
 ├── src/
-│   ├── assets/products/
-│   ├── components/
-│   │   ├── Header.astro
-│   │   ├── Footer.astro
-│   │   ├── ProductCard.astro
-│   │   ├── CategoryGrid.astro
-│   │   └── ContactForm.astro
-│   ├── layouts/BaseLayout.astro
+│   ├── assets/products/        # product images (Astro-optimized)
+│   ├── components/             # PascalCase .astro components
+│   ├── data/                   # products.ts, categories.ts, solutions.ts, downloads.ts, site.ts
 │   ├── content/
-│   │   ├── config.ts
-│   │   ├── products/
-│   │   └── categories/
+│   │   ├── config.ts           # tutorial collection schema only
+│   │   └── tutorial/           # *.mdx tutorials / Q&A / firmware notes
+│   ├── layouts/BaseLayout.astro
 │   ├── pages/
 │   │   ├── index.astro
 │   │   ├── about.astro
 │   │   ├── contact.astro
-│   │   ├── products/
-│   │   │   ├── index.astro
-│   │   │   └── [...slug].astro
-│   │   └── category/[slug].astro
+│   │   ├── downloads.astro
+│   │   ├── solutions.astro
+│   │   ├── product-selector.astro
+│   │   ├── products/{index,[...slug]}.astro
+│   │   ├── category/[slug].astro
+│   │   └── tutorial/{index,[slug]}.astro
 │   └── styles/global.css
+├── public/                     # static assets + downloadable PDFs (public/downloads/)
 └── .env.example
 ```
 
-## Content Collection Schema (src/content/config.ts)
+## Data shape (src/data/products.ts)
 
-```ts
-const products = defineCollection({
-  type: 'content',
-  schema: ({ image }) => z.object({
-    title: z.string(),
-    titleEn: z.string().optional(),
-    category: z.enum([
-      'power-meter',
-      'jumbo-display',
-      'ntp-clock',
-      'haiwell',
-    ]),
-    model: z.string(),
-    image: image(),
-    gallery: z.array(image()).optional(),
-    specs: z.array(z.object({
-      label: z.string(),
-      value: z.string(),
-    })),
-    price: z.string().default('ติดต่อสอบถาม'),
-    featured: z.boolean().default(false),
-    order: z.number().default(0),
-    pdf: z.string().optional(),
-  }),
-});
-```
+Products are typed TS objects (`Product` interface in [src/data/products.ts](src/data/products.ts)). Each product has: `id`, `name`, `slug`, `category`, `shortDescription`, `description`, `image` (filename in `src/assets/products/`), `tags`, `features`, `specs[]`, optional `model`, `protocols`, `applications`, `relatedProducts`, `downloads[]`, `faqs[]`. Add new products by appending to the `products` array.
+
+Downloads referenced in `product.downloads[].filename` should exist at `public/downloads/<filename>`. Until the real PDFs are uploaded, the UI hides links to missing files.
 
 ## Design Direction
 
