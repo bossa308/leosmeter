@@ -293,8 +293,11 @@ const defaultCatSlug =
     color: var(--brand, #0B3D91);
   }
 
-  /* Show only the col3 panel matching the active category */
-  #mega-panel .mega-product-panel { display: none; }
+  /* Col 3 product panels are hidden by default via Tailwind's `.hidden`
+     class on the markup. JS toggles that class on hover/focus. We do NOT
+     add an ID-scoped `display: none` rule here because it would have higher
+     specificity than `.flex` and would force every panel to stay hidden
+     even after `.hidden` is removed. */
 
   /* Active category highlight in col2 — set via JS data-active-cat */
 </style>
