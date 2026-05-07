@@ -113,13 +113,12 @@ const defaultCatSlug =
         ))}
       </div>
 
-      <!-- ===== Column 3: HYBRID — Subcategories + Featured Products ===== -->
+      <!-- ===== Column 3: Pure Subcategory List (with product-list fallback) ===== -->
       <div class="bg-white relative overflow-y-auto">
         {tree.flatMap(({ categories }) =>
           categories.map(({ cat, products, subCounts }) => {
             if (products.length === 0) return null;
             const subs = cat.subcategories ?? [];
-            const featured = products.slice(0, 4);
             return (
               <div class="mega-product-panel hidden absolute inset-0 p-5 flex flex-col gap-4" data-cat-slug={cat.slug}>
                 <!-- Header -->
@@ -130,11 +129,11 @@ const defaultCatSlug =
                   </a>
                 </div>
 
-                {/* Subcategory list (if defined) */}
-                {subs.length > 0 && (
+                {subs.length > 0 ? (
+                  <!-- Category HAS subcategories — show subcategory grid -->
                   <div>
                     <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">หมวดย่อย</p>
-                    <ul class="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                    <ul class="grid grid-cols-2 gap-x-4 gap-y-0.5">
                       {subs.map((s) => {
                         const count = subCounts[s.slug] ?? 0;
                         return (
@@ -157,45 +156,27 @@ const defaultCatSlug =
                       })}
                     </ul>
                   </div>
-                )}
-
-                {/* Featured products thumbnails */}
-                <div class={subs.length > 0 ? 'border-t border-gray-100 pt-4' : ''}>
-                  <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">สินค้าแนะนำ</p>
-                  <div class="grid grid-cols-2 gap-2">
-                    {featured.map((p) => {
-                      const img = images[`/src/assets/products/${p.image}`]?.default;
-                      return (
-                        <a
-                          href={`/products/${p.slug}`}
-                          class="group/p flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-colors"
-                        >
-                          <div class="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
-                            {img ? (
-                              <img
-                                src={img.src}
-                                alt={p.name}
-                                width={48}
-                                height={48}
-                                loading="lazy"
-                                decoding="async"
-                                class="w-full h-full object-contain p-1"
-                              />
-                            ) : (
-                              <Icon name="lucide:package" class="w-5 h-5 text-gray-300" aria-hidden="true" />
-                            )}
-                          </div>
-                          <div class="flex-1 min-w-0">
+                ) : (
+                  <!-- Category has NO subcategories — fall back to a flat product list -->
+                  <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">สินค้าในหมวดนี้</p>
+                    <ul class="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                      {products.map((p) => (
+                        <li>
+                          <a
+                            href={`/products/${p.slug}`}
+                            class="group/p flex items-center justify-between gap-2 px-2 py-1.5 rounded-md text-sm text-gray-700 hover:text-brand hover:bg-brand/5 transition-colors"
+                          >
+                            <span class="flex-1 min-w-0 leading-tight">{p.name}</span>
                             {p.model && (
-                              <p class="text-[10px] font-mono text-gray-400 leading-tight truncate">{p.model}</p>
+                              <span class="text-[10px] font-mono text-gray-400 group-hover/p:text-brand truncate">{p.model}</span>
                             )}
-                            <p class="text-xs font-semibold text-gray-800 group-hover/p:text-brand leading-tight line-clamp-2">{p.name}</p>
-                          </div>
-                        </a>
-                      );
-                    })}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
+                )}
               </div>
             );
           })
