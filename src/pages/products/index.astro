@@ -280,6 +280,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
                 data-tag={tagStr.toLowerCase()}
                 data-brand={brand}
                 data-category={product.category}
+                data-subcategory={product.subcategory ?? ''}
                 data-protocol={protoStr}
                 data-application={appStr}
                 data-featured={product.featured ? '1' : '0'}
@@ -462,11 +463,18 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 
   // ----- Filtering -----
 
+  // Subcategory filter — driven by URL param (?subcategory=<slug>), not a sidebar facet.
+  // Cleared by clearAll() and visible as an active-filter chip.
+  let activeSubcategory = '';
+
   function itemMatches(el: HTMLElement, q: string): boolean {
     // Free-text search across name + model + desc + tag.
     if (q) {
       const haystack = `${el.dataset.name} ${el.dataset.model} ${el.dataset.desc} ${el.dataset.tag}`;
       if (!haystack.includes(q)) return false;
+    }
+    if (activeSubcategory && el.dataset.subcategory !== activeSubcategory) {
+      return false;
     }
     for (const facet of FACETS) {
       const sel = selected[facet];
@@ -481,7 +489,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   }
 
   function activeFilterCount(): number {
-    return FACETS.reduce((sum, f) => sum + selected[f].size, 0);
+    return FACETS.reduce((sum, f) => sum + selected[f].size, 0) + (activeSubcategory ? 1 : 0);
   }
 
   function applyFilters() {
@@ -541,6 +549,19 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     chipsEl.classList.remove('hidden');
     chipsEl.classList.add('flex');
 
+    if (activeSubcategory) {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'inline-flex items-center gap-1.5 text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-200 rounded-full px-2.5 py-1 hover:bg-orange-200';
+      chip.innerHTML = `<span class="text-[10px] uppercase tracking-wider opacity-60">subcategory:</span><span>${activeSubcategory}</span><svg class="w-3 h-3 opacity-60" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+      chip.addEventListener('click', () => {
+        activeSubcategory = '';
+        updateUrl();
+        applyFilters();
+      });
+      chipsEl.appendChild(chip);
+    }
+
     FACETS.forEach((facet) => {
       selected[facet].forEach((value) => {
         const chip = document.createElement('button');
@@ -555,6 +576,13 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
         chipsEl.appendChild(chip);
       });
     });
+  }
+
+  function updateUrl() {
+    const url = new URL(location.href);
+    if (activeSubcategory) url.searchParams.set('subcategory', activeSubcategory);
+    else                   url.searchParams.delete('subcategory');
+    history.replaceState(null, '', url);
   }
 
   // ----- Checkbox sync (sidebar + drawer share visual state via re-applying) -----
@@ -616,7 +644,9 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 
   function clearAll() {
     FACETS.forEach((f) => selected[f].clear());
+    activeSubcategory = '';
     searchInput.value = '';
+    updateUrl();
     syncCheckboxes();
     applyFilters();
   }
@@ -669,6 +699,21 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   backdrop.addEventListener('click', closeDrawer);
   applyMobile.addEventListener('click', closeDrawer);
   clearMobile.addEventListener('click', () => { clearAll(); closeDrawer(); });
+
+  // ----- URL parameter pre-filtering -----
+  // Supports /products?category=<slug>&subcategory=<slug> from MegaMenu / external links.
+  (function applyUrlParams() {
+    const params = new URLSearchParams(location.search);
+    const cat = params.get('category');
+    const sub = params.get('subcategory');
+    if (cat) {
+      selected.category.add(cat);
+      syncCheckboxes();
+    }
+    if (sub) {
+      activeSubcategory = sub;
+    }
+  })();
 
   // ----- Initial state -----
   applyFilters();

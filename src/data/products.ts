@@ -379,6 +379,7 @@ export const products: Product[] = [
     name: 'Ethernet I/O Module',
     slug: 'ethernet-io',
     category: 'ethernet-io',
+    subcategory: 'digital-io',
     shortDescription: 'Remote I/O ผ่าน Ethernet Modbus TCP/IP ควบคุม DI/DO/AI จากระยะไกล',
     description:
       'Ethernet I/O Module ทำหน้าที่เป็น Remote I/O ส่งสถานะ Digital Input/Output และค่า Analog Input ผ่าน Ethernet Modbus TCP/IP เหมาะสำหรับระบบ SCADA ที่ต้องการ I/O จากหลายจุดในโรงงานโดยไม่ต้องเดินสาย Fieldbus',
@@ -422,6 +423,7 @@ export const products: Product[] = [
     name: 'Process Meter',
     slug: 'process-meter',
     category: 'process-meter',
+    subcategory: 'process-4-20',
     shortDescription: 'วัดและแสดงค่า Process Signal 4-20mA / 0-10V / Thermocouple / PT100',
     description:
       'Process Meter Panel Mount วัดและแสดงค่า Process Signal หลากหลายรูปแบบ ทั้ง 4-20mA, 0-10V, Thermocouple และ PT100 พร้อม Relay Output สำหรับ Alarm ตั้งค่า Setpoint ได้ รองรับ RS-485 Modbus RTU สำหรับการส่งข้อมูลเข้าระบบ SCADA',
@@ -654,6 +656,7 @@ export const products: Product[] = [
     name: 'DC Voltage Meter (DC2-B11)',
     slug: 'dc-voltage-meter',
     category: 'dc-meter',
+    subcategory: 'dc-voltage',
     shortDescription: 'มิเตอร์วัดแรงดัน DC แบบ Panel Mount พร้อม RS-485 และ 4-20mA',
     description:
       'DC2-B11 Series — DC Voltage Meter Panel Mount แสดงค่าแรงดัน DC บนหน้าจอ LED 4 หลัก เลือก option ได้: RS-485 Modbus RTU, Analog Output 6-in-1, แรงดันไฟเลี้ยง 220Vac หรือ 24Vdc',
@@ -688,6 +691,7 @@ export const products: Product[] = [
     name: 'DC Amp Meter (DC2-B21)',
     slug: 'dc-amp-meter',
     category: 'dc-meter',
+    subcategory: 'dc-current',
     shortDescription: 'มิเตอร์วัดกระแส DC ใช้กับ CT 0-5A พร้อม option RS-485 / 4-20mA',
     description:
       'DC2-B21 Series — DC Amp Meter ใช้คู่กับ DC Current Sensor 0-5A (ภายใน) แสดงผลบน LED 4 หลัก รองรับ Scaling, RS-485 Modbus RTU, และ Analog Output 6-in-1',
@@ -720,6 +724,7 @@ export const products: Product[] = [
     name: 'DC Amp Meter — External Shunt (DC2-B22)',
     slug: 'dc-amp-meter-external-shunt',
     category: 'dc-meter',
+    subcategory: 'dc-current',
     shortDescription: 'มิเตอร์วัดกระแส DC ใช้กับ Shunt 200mV ภายนอก รองรับ Scaling',
     description:
       'DC2-B22 Series — DC Amp Meter ใช้คู่กับ Shunt 200mV ภายนอก (External R-Shunt) เหมาะกับงานวัดกระแส DC สูง ๆ ตั้งแต่ 50A ขึ้นไป มี Scaling ในตัว',
@@ -752,6 +757,7 @@ export const products: Product[] = [
     name: 'DC Power Meter (DC2-B41)',
     slug: 'dc-power-meter',
     category: 'dc-meter',
+    subcategory: 'dc-power',
     shortDescription: 'มิเตอร์วัดพลังงาน DC ครบ Volt + Amp + kW + kWh พร้อม RS-485',
     description:
       'DC2-B41 Series — DC Power Meter วัด V, A, kW, kWh DC ในเครื่องเดียว เหมาะสำหรับ Solar System, Battery Storage และ EV Charging Station มี Scaling ในตัวพร้อม Option RS-485 และ 4-20mA',
@@ -781,6 +787,7 @@ export const products: Product[] = [
     name: 'Amp-Hour Meter (DC2-B42)',
     slug: 'amp-hour-meter',
     category: 'dc-meter',
+    subcategory: 'amp-hour',
     shortDescription: 'มิเตอร์นับ Amp-Hour สำหรับ Battery Charging / Plating Process',
     description:
       'DC2-B42 Series — Amp-Hour Meter นับปริมาณ Amp-Hour ที่ผ่าน เหมาะสำหรับงาน Battery Charging, Electroplating, Anodizing ที่ต้องควบคุมปริมาณกระแสรวม',
@@ -1667,6 +1674,7 @@ export const products: Product[] = [
     name: 'Protocol Converter (MPL-J Series)',
     slug: 'protocol-converter',
     category: 'converter-repeater',
+    subcategory: 'protocol-converter',
     shortDescription: 'แปลง Modbus RTU/TCP, Mitsubishi FX, OMRON Host Link ในเครื่องเดียว',
     description:
       'MPL-J Series — Protocol Converter หลากหลายแบบ: Modbus TCP ↔ Modbus RTU, Mitsubishi FX ↔ Modbus TCP, OMRON Host Link ↔ Modbus เลือกได้ตามรุ่น',
@@ -1692,6 +1700,7 @@ export const products: Product[] = [
     name: 'RS-485 Hub & Repeater (HUB485)',
     slug: 'rs485-hub-repeater',
     category: 'converter-repeater',
+    subcategory: 'repeater',
     shortDescription: 'แยก RS-485 หลาย Branch พร้อม Repeater + Isolation',
     description:
       'HUB485x2 — RS-485 Hub แบบ 2 channel พร้อม Repeater และ Isolation ใช้แยกสาย RS-485 หลายเส้นออกจาก Master ตัวเดียว ป้องกันสัญญาณตกในระยะไกล',
